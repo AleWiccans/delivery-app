@@ -1259,7 +1259,7 @@
             </div>
         </div>
 
-        <!-- Modal para Nuevo Producto -->
+        <!-- Modal para Nuevo Producto (MODIFICADO para incluir precio de costo) -->
         <div id="modalNuevoProducto" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1276,8 +1276,15 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="precioProducto">Precio *</label>
+                        <label for="precioCostoProducto">Precio de Costo *</label>
+                        <input type="number" id="precioCostoProducto" class="form-control" placeholder="0" required>
+                        <small style="color: var(--secondary);">Precio al que te lo dan a ti (solo tú ves esto)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="precioProducto">Precio de Venta *</label>
                         <input type="number" id="precioProducto" class="form-control" placeholder="0" required>
+                        <small style="color: var(--secondary);">Precio al que lo vendes al cliente</small>
                     </div>
                     
                     <div class="form-group">
@@ -1802,7 +1809,8 @@
                             <div class="producto-info">
                                 <h4>${producto.nombre}</h4>
                                 <div style="font-size: 0.8rem; color: var(--secondary);">
-                                    $${producto.precio}
+                                    <div>Venta: $${producto.precio}</div>
+                                    ${usuarioLogueado ? `<div style="color: #10b981;">Costo: $${producto.precioCosto || 0}</div>` : ''}
                                     ${producto.presentacion ? ` • ${producto.presentacion}` : ''}
                                     <span class="categoria-badge categoria-${producto.categoria}">
                                         ${producto.categoria}
@@ -1869,7 +1877,7 @@
             return nombres[categoria] || categoria;
         }
 
-        // Funciones de Productos
+        // Funciones de Productos (MODIFICADAS para incluir precio de costo)
         function abrirModalNuevoProducto() {
             productoEditando = null;
             document.getElementById('modalProductoTitulo').textContent = 'Nuevo Producto';
@@ -1888,6 +1896,7 @@
                 id: productoEditando ? productoEditando.id : Date.now(),
                 nombre: document.getElementById('nombreProducto').value,
                 precio: parseInt(document.getElementById('precioProducto').value),
+                precioCosto: parseInt(document.getElementById('precioCostoProducto').value),
                 categoria: document.getElementById('categoriaProducto').value,
                 presentacion: document.getElementById('presentacionProducto').value || ''
             };
@@ -1932,6 +1941,7 @@
             document.getElementById('productoId').value = productoEditando.id;
             document.getElementById('nombreProducto').value = productoEditando.nombre;
             document.getElementById('precioProducto').value = productoEditando.precio;
+            document.getElementById('precioCostoProducto').value = productoEditando.precioCosto || 0;
             document.getElementById('categoriaProducto').value = productoEditando.categoria;
             document.getElementById('presentacionProducto').value = productoEditando.presentacion || '';
             
@@ -1949,6 +1959,36 @@
                     cargarProductosListado();
                 }
             }
+        }
+
+        // Función para buscar un producto original por ID
+        function buscarProductoOriginal(productoId) {
+            for (let listado of listados) {
+                if (listado.productos) {
+                    const producto = listado.productos.find(p => p.id === productoId);
+                    if (producto) return producto;
+                }
+            }
+            return null;
+        }
+
+        // Función para calcular ganancia por producto
+        function calcularGananciaProducto(productoPedido) {
+            const productoOriginal = buscarProductoOriginal(productoPedido.id);
+            if (productoOriginal && productoOriginal.precioCosto) {
+                const gananciaPorUnidad = productoPedido.precio - productoOriginal.precioCosto;
+                return gananciaPorUnidad * productoPedido.cantidad;
+            }
+            return 0;
+        }
+
+        // Función para calcular ganancia total de un pedido
+        function calcularGananciaPedido(pedido) {
+            let gananciaTotal = 0;
+            pedido.productos.forEach(productoPedido => {
+                gananciaTotal += calcularGananciaProducto(productoPedido);
+            });
+            return gananciaTotal + (pedido.precioDomicilio || 0);
         }
 
         // ANALIZADOR INTELIGENTE MEJORADO
@@ -2092,6 +2132,7 @@
                         id: Date.now() + Math.random(),
                         nombre: nombre,
                         precio: precio,
+                        precioCosto: Math.round(precio * 0.7), // Establece el costo como 70% del precio de venta
                         categoria: categoria,
                         presentacion: presentacion
                     };
@@ -2176,6 +2217,7 @@
                     
                     <div style="text-align: right; margin-top: 12px; font-weight: bold;">
                         Total: $${calcularTotalPedido(pedido)}
+                        ${usuarioLogueado ? `<br><small style="color: #10b981;">Ganancia: $${calcularGananciaPedido(pedido)}</small>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -2235,6 +2277,7 @@
             
             const container = document.getElementById('detalle-pedido-contenido');
             const total = calcularTotalPedido(pedido);
+            const ganancia = calcularGananciaPedido(pedido);
             
             container.innerHTML = `
                 <div class="pedido-detalle">
@@ -2264,20 +2307,34 @@
                         <span class="detalle-value">$${pedido.precioDomicilio || 0}</span>
                     </div>
                     ` : ''}
+                    ${usuarioLogueado ? `
+                    <div class="detalle-item" style="color: #10b981; font-weight: bold;">
+                        <span class="detalle-label">Ganancia:</span>
+                        <span class="detalle-value">$${ganancia}</span>
+                    </div>
+                    ` : ''}
                 </div>
                 
                 <h3 style="margin: 16px 0 8px 0;">Productos:</h3>
                 <div class="productos-list">
-                    ${pedido.productos.map(p => `
-                        <div class="producto-item">
-                            <span>${p.cantidad}x ${p.nombre}</span>
-                            <span class="producto-detalle">($${p.precio} c/u) - $${p.precio * p.cantidad}</span>
-                        </div>
-                    `).join('')}
+                    ${pedido.productos.map(p => {
+                        const productoOriginal = buscarProductoOriginal(p.id);
+                        const gananciaProducto = productoOriginal ? (p.precio - (productoOriginal.precioCosto || 0)) * p.cantidad : 0;
+                        return `
+                            <div class="producto-item">
+                                <span>${p.cantidad}x ${p.nombre}</span>
+                                <span class="producto-detalle">
+                                    ($${p.precio} c/u) - $${p.precio * p.cantidad}
+                                    ${usuarioLogueado && productoOriginal ? `<br><span style="color: #10b981;">Ganancia: $${gananciaProducto}</span>` : ''}
+                                </span>
+                            </div>
+                        `;
+                    }).join('')}
                 </div>
                 
                 <div class="total-section">
                     Total: $${total}
+                    ${usuarioLogueado ? `<br><small style="color: #10b981; font-size: 1rem;">Ganancia Total: $${ganancia}</small>` : ''}
                 </div>
             `;
             
@@ -2588,6 +2645,7 @@
                             <input type="checkbox" id="prod-${producto.id}" value="${producto.id}">
                             <label for="prod-${producto.id}" style="flex: 1;">
                                 <strong>${producto.nombre}</strong> - $${producto.precio}
+                                ${usuarioLogueado && producto.precioCosto ? `<br><small style="color: #10b981;">Costo: $${producto.precioCosto}</small>` : ''}
                                 ${producto.presentacion ? ` (${producto.presentacion})` : ''}
                             </label>
                             <input type="number" min="1" value="1" style="width: 60px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px;" id="cant-${producto.id}">
@@ -2635,20 +2693,26 @@
 
         function actualizarListaProductosSeleccionados() {
             const container = document.getElementById('productosSeleccionados');
-            container.innerHTML = productosSeleccionados.map((producto, index) => `
-                <div class="producto-seleccionado">
-                    <div>
-                        <strong>${producto.cantidad}x ${producto.nombre}</strong>
-                        <br><small>$${producto.precio} c/u</small>
+            container.innerHTML = productosSeleccionados.map((producto, index) => {
+                const productoOriginal = buscarProductoOriginal(producto.id);
+                const gananciaProducto = productoOriginal ? (producto.precio - (productoOriginal.precioCosto || 0)) * producto.cantidad : 0;
+                
+                return `
+                    <div class="producto-seleccionado">
+                        <div>
+                            <strong>${producto.cantidad}x ${producto.nombre}</strong>
+                            <br><small>$${producto.precio} c/u</small>
+                            ${usuarioLogueado && productoOriginal ? `<br><small style="color: #10b981;">Ganancia: $${gananciaProducto}</small>` : ''}
+                        </div>
+                        <div>
+                            <strong>$${producto.precio * producto.cantidad}</strong>
+                            <button type="button" onclick="eliminarProductoSeleccionado(${index})" style="background: none; border: none; color: var(--danger); margin-left: 8px; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div>
-                        <strong>$${producto.precio * producto.cantidad}</strong>
-                        <button type="button" onclick="eliminarProductoSeleccionado(${index})" style="background: none; border: none; color: var(--danger); margin-left: 8px; cursor: pointer;">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
             
             actualizarTotal();
         }
@@ -2687,7 +2751,7 @@
             });
         }
 
-        // Funciones de Estadísticas
+        // Funciones de Estadísticas (MODIFICADAS para incluir ganancias)
         function cargarEstadisticas() {
             const periodo = document.getElementById('filtroPeriodo').value;
             const mes = document.getElementById('filtroMes').value;
@@ -2765,28 +2829,61 @@
                 return;
             }
             
-            // Calcular estadísticas
+            // Calcular estadísticas básicas
             const totalVentas = pedidosFiltrados.reduce((sum, p) => sum + calcularTotalPedido(p), 0);
             const promedioVenta = totalVentas / pedidosFiltrados.length;
             const totalProductos = pedidosFiltrados.reduce((sum, p) => sum + p.productos.reduce((sumProd, prod) => sumProd + prod.cantidad, 0), 0);
+            
+            // Calcular costo total y ganancias (SOLO PARA USUARIOS LOGUEADOS)
+            let totalCosto = 0;
+            let gananciaTotal = 0;
+            let gananciaDomicilio = 0;
+            
+            if (usuarioLogueado) {
+                pedidosFiltrados.forEach(pedido => {
+                    const costoPedido = pedido.productos.reduce((sum, productoPedido) => {
+                        const productoOriginal = buscarProductoOriginal(productoPedido.id);
+                        if (productoOriginal && productoOriginal.precioCosto) {
+                            return sum + (productoOriginal.precioCosto * productoPedido.cantidad);
+                        }
+                        return sum;
+                    }, 0);
+                    totalCosto += costoPedido;
+                    gananciaTotal += calcularTotalPedido(pedido) - costoPedido;
+                    gananciaDomicilio += pedido.precioDomicilio || 0;
+                });
+            }
             
             // Productos más vendidos
             const productosVendidos = {};
             pedidosFiltrados.forEach(pedido => {
                 pedido.productos.forEach(producto => {
                     if (!productosVendidos[producto.nombre]) {
-                        productosVendidos[producto.nombre] = 0;
+                        productosVendidos[producto.nombre] = {
+                            cantidad: 0,
+                            ganancia: 0
+                        };
                     }
-                    productosVendidos[producto.nombre] += producto.cantidad;
+                    productosVendidos[producto.nombre].cantidad += producto.cantidad;
+                    
+                    if (usuarioLogueado) {
+                        const productoOriginal = buscarProductoOriginal(producto.id);
+                        if (productoOriginal && productoOriginal.precioCosto) {
+                            productosVendidos[producto.nombre].ganancia += 
+                                (producto.precio - productoOriginal.precioCosto) * producto.cantidad;
+                        }
+                    }
                 });
             });
             
             const productosTop = Object.entries(productosVendidos)
-                .sort((a, b) => b[1] - a[1])
+                .sort((a, b) => b[1].cantidad - a[1].cantidad)
                 .slice(0, 5);
             
             // Ventas por día/mes
             const ventasPorTiempo = {};
+            const gananciasPorTiempo = {};
+            
             pedidosFiltrados.forEach(pedido => {
                 const fecha = new Date(pedido.fechaCompletado);
                 let clave;
@@ -2799,11 +2896,13 @@
                 
                 if (!ventasPorTiempo[clave]) {
                     ventasPorTiempo[clave] = 0;
+                    gananciasPorTiempo[clave] = 0;
                 }
                 ventasPorTiempo[clave] += calcularTotalPedido(pedido);
+                gananciasPorTiempo[clave] += calcularGananciaPedido(pedido);
             });
             
-            container.innerHTML = `
+            let statsHTML = `
                 <div class="stat-card">
                     <div class="stat-value">${pedidosFiltrados.length}</div>
                     <div class="stat-label">Total Pedidos</div>
@@ -2822,27 +2921,59 @@
                 </div>
             `;
             
-            detallesContainer.innerHTML = `
-                <h3>Productos Más Vendidos</h3>
-                <div class="productos-list">
-                    ${productosTop.map(([producto, cantidad]) => `
-                        <div class="producto-item">
-                            <span>${producto}</span>
-                            <span>${cantidad} unidades</span>
-                        </div>
-                    `).join('')}
-                </div>
-                
+            // Agregar estadísticas de ganancias solo para usuarios logueados
+            if (usuarioLogueado) {
+                statsHTML += `
+                    <div class="stat-card" style="background: #f0fdf4;">
+                        <div class="stat-value" style="color: #10b981;">$${gananciaTotal.toLocaleString()}</div>
+                        <div class="stat-label">Ganancia Neta</div>
+                    </div>
+                    <div class="stat-card" style="background: #f0fdf4;">
+                        <div class="stat-value" style="color: #10b981;">$${gananciaDomicilio.toLocaleString()}</div>
+                        <div class="stat-label">Ganancia Domicilios</div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = statsHTML;
+            
+            let detallesHTML = '';
+            
+            if (productosTop.length > 0) {
+                detallesHTML += `
+                    <h3>Productos Más Vendidos</h3>
+                    <div class="productos-list">
+                        ${productosTop.map(([producto, datos]) => `
+                            <div class="producto-item">
+                                <span>${producto}</span>
+                                <div>
+                                    <div>${datos.cantidad} unidades</div>
+                                    ${usuarioLogueado && datos.ganancia > 0 ? 
+                                        `<div style="color: #10b981; font-size: 0.8rem;">Ganancia: $${datos.ganancia}</div>` : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            detallesHTML += `
                 <h3 style="margin-top: 24px;">Ventas por ${periodo === 'dia' || periodo === 'semana' ? 'Día' : 'Mes'}</h3>
                 <div class="productos-list">
                     ${Object.entries(ventasPorTiempo).map(([fecha, venta]) => `
                         <div class="producto-item">
                             <span>${fecha}</span>
-                            <span>$${venta.toLocaleString()}</span>
+                            <div>
+                                <div>Ventas: $${venta.toLocaleString()}</div>
+                                ${usuarioLogueado && gananciasPorTiempo[fecha] ? 
+                                    `<div style="color: #10b981; font-size: 0.8rem;">Ganancia: $${gananciasPorTiempo[fecha].toLocaleString()}</div>` : ''}
+                            </div>
                         </div>
                     `).join('')}
                 </div>
             `;
+            
+            detallesContainer.innerHTML = detallesHTML;
         }
 
         function generarPDF() {
@@ -2905,6 +3036,24 @@
             const promedioVenta = totalVentas / (pedidosFiltrados.length || 1);
             const totalProductos = pedidosFiltrados.reduce((sum, p) => sum + p.productos.reduce((sumProd, prod) => sumProd + prod.cantidad, 0), 0);
             
+            // Calcular ganancias si hay usuario logueado
+            let totalCosto = 0;
+            let gananciaTotal = 0;
+            
+            if (usuarioLogueado) {
+                pedidosFiltrados.forEach(pedido => {
+                    const costoPedido = pedido.productos.reduce((sum, productoPedido) => {
+                        const productoOriginal = buscarProductoOriginal(productoPedido.id);
+                        if (productoOriginal && productoOriginal.precioCosto) {
+                            return sum + (productoOriginal.precioCosto * productoPedido.cantidad);
+                        }
+                        return sum;
+                    }, 0);
+                    totalCosto += costoPedido;
+                    gananciaTotal += calcularTotalPedido(pedido) - costoPedido + (pedido.precioDomicilio || 0);
+                });
+            }
+            
             // Estadísticas en PDF
             doc.setFontSize(12);
             doc.text(`Período: ${document.getElementById('filtroPeriodo').options[document.getElementById('filtroPeriodo').selectedIndex].text}`, 20, 45);
@@ -2912,6 +3061,13 @@
             doc.text(`Total Ventas: $${totalVentas.toLocaleString()}`, 20, 65);
             doc.text(`Promedio por Pedido: $${promedioVenta.toFixed(2)}`, 20, 75);
             doc.text(`Total Productos Vendidos: ${totalProductos}`, 20, 85);
+            
+            if (usuarioLogueado) {
+                doc.setTextColor(16, 185, 129); // Color verde para ganancias
+                doc.text(`Costo Total: $${totalCosto.toLocaleString()}`, 20, 95);
+                doc.text(`Ganancia Neta: $${gananciaTotal.toLocaleString()}`, 20, 105);
+                doc.setTextColor(0, 0, 0); // Volver a color negro
+            }
             
             // Productos más vendidos
             const productosVendidos = {};
@@ -2928,7 +3084,7 @@
                 .sort((a, b) => b[1] - a[1])
                 .slice(0, 10);
             
-            let yPos = 100;
+            let yPos = 120;
             doc.text('Productos Más Vendidos:', 20, yPos);
             yPos += 10;
             
@@ -2953,7 +3109,7 @@
                 usuarios: usuarios,
                 notificaciones: notificaciones,
                 fechaBackup: new Date().toISOString(),
-                version: '2.0'
+                version: '3.0' // Versión actualizada con precio de costo
             };
             
             const dataStr = JSON.stringify(data, null, 2);
@@ -3109,6 +3265,7 @@
                             
                             <div style="text-align: right; margin-top: 12px; font-weight: bold;">
                                 Total: $${calcularTotalPedido(pedido)}
+                                ${usuarioLogueado ? `<br><small style="color: #10b981;">Ganancia: $${calcularGananciaPedido(pedido)}</small>` : ''}
                             </div>
                         </div>
                     `).join('')}
