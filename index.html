@@ -741,6 +741,156 @@
             border-color: var(--primary);
         }
 
+        /* Botón Compartir Lista */
+        .btn-share-list {
+            background: #3B82F6;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        /* Producto Disponibilidad */
+        .disponibilidad-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        
+        .disponible {
+            background: #10b98120;
+            color: #10b981;
+        }
+        
+        .no-disponible {
+            background: #ef444420;
+            color: #ef4444;
+        }
+
+        /* Productos Nuevos */
+        .producto-nuevo-tag {
+            background: linear-gradient(45deg, #f59e0b, #fbbf24);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .nuevos-container {
+            background: linear-gradient(135deg, #fef3c7, #fef7cd);
+            padding: 16px;
+            border-radius: 12px;
+            margin: 16px 12px;
+            border: 2px dashed #f59e0b;
+        }
+        
+        .nuevos-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #92400e;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        /* Modal Compartir Lista */
+        .share-content {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+        
+        .share-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1e40af;
+        }
+        
+        .share-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #92400e;
+            font-weight: bold;
+        }
+
+        /* Filtros Historial */
+        .filtros-historial {
+            display: flex;
+            gap: 8px;
+            margin: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filtro-btn {
+            padding: 8px 12px;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .filtro-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Backup Management */
+        .backup-list {
+            margin-top: 16px;
+        }
+        
+        .backup-item {
+            background: var(--surface);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .backup-info {
+            font-size: 0.9rem;
+        }
+        
+        .backup-actions {
+            display: flex;
+            gap: 8px;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 480px) {
             .header h1 {
@@ -768,6 +918,11 @@
             .pedido-actions .btn {
                 min-width: 44px;
                 min-height: 44px;
+            }
+            
+            .filtros-historial {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
 
@@ -836,6 +991,12 @@
                 <div id="lista-productos-cliente">
                     <!-- Productos para clientes -->
                 </div>
+                
+                <!-- Productos Nuevos para Clientes -->
+                <div id="nuevos-productos-cliente" style="display: none;">
+                    <!-- Productos nuevos se cargan aquí -->
+                </div>
+                
                 <button class="fab" onclick="abrirModalPedido()">
                     <i class="fas fa-plus"></i>
                 </button>
@@ -861,6 +1022,34 @@
             </div>
 
             <div id="historial-tab" class="tab-content" style="display: none;">
+                <!-- Filtros de Historial -->
+                <div class="filtros-historial">
+                    <button class="filtro-btn active" onclick="cambiarFiltroHistorial('todos')">Todos</button>
+                    <button class="filtro-btn" onclick="cambiarFiltroHistorial('hoy')">Hoy</button>
+                    <input type="date" id="filtroFechaHistorial" class="filtro-select" onchange="filtrarHistorialPorFecha(this.value)" style="flex: 2;">
+                    <select id="filtroMesHistorial" class="filtro-select" onchange="filtrarHistorialPorMes(this.value)">
+                        <option value="">Mes</option>
+                        <option value="01">Enero</option>
+                        <option value="02">Febrero</option>
+                        <option value="03">Marzo</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Mayo</option>
+                        <option value="06">Junio</option>
+                        <option value="07">Julio</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Septiembre</option>
+                        <option value="10">Octubre</option>
+                        <option value="11">Noviembre</option>
+                        <option value="12">Diciembre</option>
+                    </select>
+                    <select id="filtroAnioHistorial" class="filtro-select" onchange="filtrarHistorialPorAnio(this.value)">
+                        <option value="">Año</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                    </select>
+                </div>
+                
                 <div id="lista-historial">
                     <!-- Historial se carga aquí -->
                 </div>
@@ -904,6 +1093,11 @@
                         </button>
                     </div>
                     
+                    <!-- Productos Nuevos -->
+                    <div id="nuevos-productos-usuario" style="display: none;">
+                        <!-- Productos nuevos se cargan aquí -->
+                    </div>
+                    
                     <div class="action-buttons">
                         <button class="action-btn btn-clear" onclick="limpiarTodo()">
                             <i class="fas fa-trash"></i> Limpiar Todo
@@ -929,7 +1123,7 @@
                         </div>
                     </div>
 
-                    <h3 style="margin-bottom: 16px; font-size: 1.2rem;">Copia de Seguridad</h3>
+                    <h3 style="margin-bottom: 16px; font-size: 1.2rem;">Gestión de Backups</h3>
                     <div class="action-buttons">
                         <button class="action-btn btn-export" onclick="exportarBackup()">
                             <i class="fas fa-download"></i> Exportar Backup
@@ -939,6 +1133,11 @@
                         </button>
                     </div>
                     <input type="file" id="importBackupFile" accept=".json" style="display: none;" onchange="importarBackup(event)">
+                    
+                    <!-- Lista de Backups -->
+                    <div id="lista-backups" class="backup-list">
+                        <!-- Backups se cargan aquí -->
+                    </div>
                     
                     <div style="margin-top: 24px;">
                         <h3 style="margin-bottom: 16px; font-size: 1.2rem;">Información de la App</h3>
@@ -954,6 +1153,10 @@
                             <div class="detalle-item">
                                 <span class="detalle-label">Total Productos:</span>
                                 <span class="detalle-value" id="totalProductos">0</span>
+                            </div>
+                            <div class="detalle-item">
+                                <span class="detalle-label">Último Backup:</span>
+                                <span class="detalle-value" id="ultimoBackup">Nunca</span>
                             </div>
                         </div>
                     </div>
@@ -1247,6 +1450,12 @@
                     <button class="close-btn" onclick="cerrarModalGestionListado()">&times;</button>
                 </div>
                 
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <button class="btn" onclick="compartirListadoActual()" style="background: #3B82F6; color: white;">
+                        <i class="fas fa-share-alt"></i> Compartir Lista
+                    </button>
+                </div>
+                
                 <div id="productos-listado" style="max-height: 400px; overflow-y: auto;">
                     <!-- Productos del listado -->
                 </div>
@@ -1259,7 +1468,7 @@
             </div>
         </div>
 
-        <!-- Modal para Nuevo Producto (MODIFICADO para incluir precio de costo) -->
+        <!-- Modal para Nuevo Producto -->
         <div id="modalNuevoProducto" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1307,6 +1516,11 @@
                         <input type="text" id="presentacionProducto" class="form-control" placeholder="Ej: Blister, Tableta, Frasco, etc.">
                     </div>
                     
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="productoDisponible" checked>
+                        <label for="productoDisponible">Producto disponible</label>
+                    </div>
+                    
                     <div style="display: flex; gap: 12px;">
                         <button type="button" class="btn" onclick="cerrarModalNuevoProducto()" style="flex: 1; background: var(--secondary); color: white; padding: 16px;">
                             Cancelar
@@ -1316,6 +1530,41 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Modal para Compartir Listado -->
+        <div id="modalCompartirListado" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📋 Lista de Productos</h2>
+                    <button class="close-btn" onclick="cerrarModalCompartirListado()">&times;</button>
+                </div>
+                
+                <div class="share-header">
+                    <h3 style="color: #1e40af;">🏥 FARMACIA DELIVERY 🏥</h3>
+                    <p>📅 Actualizado: <span id="fechaActualizacion"></span></p>
+                    <p>¡Hola! 👋 Aquí está nuestra lista actualizada de productos:</p>
+                </div>
+                
+                <div class="share-content" id="contenidoParaCompartir">
+                    <!-- Contenido para compartir -->
+                </div>
+                
+                <div class="share-footer">
+                    <p>🚚 *DOMICILIOS A $150* 💰</p>
+                    <p>📞 ¡Llámanos para pedidos! 📲</p>
+                    <p>✨ ¡Gracias por tu preferencia! ✨</p>
+                </div>
+                
+                <div style="display: flex; gap: 12px; margin-top: 20px;">
+                    <button class="btn" onclick="copiarLista()" style="flex: 1; background: #3B82F6; color: white; padding: 16px;">
+                        <i class="fas fa-copy"></i> Copiar Lista
+                    </button>
+                    <button class="btn" onclick="compartirListaWhatsApp()" style="flex: 1; background: #25D366; color: white; padding: 16px;">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1364,6 +1613,7 @@
         let listados = JSON.parse(localStorage.getItem('listados')) || [];
         let usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
         let notificaciones = JSON.parse(localStorage.getItem('notificaciones')) || [];
+        let backups = JSON.parse(localStorage.getItem('backups')) || [];
         let usuarioLogueado = JSON.parse(localStorage.getItem('usuarioLogueado')) || null;
         let productosSeleccionados = [];
         let pedidoEditando = null;
@@ -1374,6 +1624,14 @@
         let mesActualCalendario = new Date().getMonth();
         let añoActualCalendario = new Date().getFullYear();
         let intervaloNotificaciones = null;
+        let filtroHistorialActual = 'todos';
+
+        // Configuración
+        let config = JSON.parse(localStorage.getItem('config')) || {
+            autoSave: true,
+            ultimoBackup: null,
+            backupFile: 'backup-delivery.json'
+        };
 
         // Usuario administrador pre-configurado
         const ADMIN_USER = {
@@ -1392,6 +1650,8 @@
             cargarListadosIniciales();
             actualizarEstadisticas();
             iniciarSistemaNotificaciones();
+            cargarProductosNuevos();
+            cargarListaBackups();
             
             // Configurar formularios
             document.getElementById('formPedido').addEventListener('submit', guardarPedido);
@@ -1406,14 +1666,821 @@
                 document.getElementById('filtroMes').style.display = periodo === 'mes' ? 'block' : 'none';
                 document.getElementById('filtroAño').style.display = periodo === 'año' ? 'block' : 'none';
             });
+            
+            // Establecer año actual en filtros
+            const añoActual = new Date().getFullYear();
+            document.getElementById('filtroAnioHistorial').value = añoActual.toString();
+            document.getElementById('filtroAño').value = añoActual;
         });
 
+        // ================ SISTEMA DE GUARDADO AUTOMÁTICO ================
+        function guardarEnLocalStorage() {
+            try {
+                localStorage.setItem('pedidos', JSON.stringify(pedidos));
+                localStorage.setItem('listados', JSON.stringify(listados));
+                localStorage.setItem('usuarios', JSON.stringify(usuarios));
+                localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
+                localStorage.setItem('backups', JSON.stringify(backups));
+                localStorage.setItem('config', JSON.stringify(config));
+                
+                if (usuarioLogueado) {
+                    localStorage.setItem('usuarioLogueado', JSON.stringify(usuarioLogueado));
+                }
+                
+                actualizarEstadisticas();
+                
+                // Guardar automáticamente si está activado
+                if (config.autoSave) {
+                    guardarBackupAutomatico();
+                }
+                
+                console.log('Datos guardados automáticamente');
+            } catch (error) {
+                console.error('Error al guardar datos:', error);
+            }
+        }
+
+        function guardarBackupAutomatico() {
+            const data = {
+                pedidos: pedidos,
+                listados: listados,
+                usuarios: usuarios,
+                notificaciones: notificaciones,
+                fechaBackup: new Date().toISOString(),
+                version: '4.0' // Versión con todas las mejoras
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            
+            // Crear blob y descargar automáticamente si es necesario
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            
+            // Para usar un solo archivo, guardamos la referencia en config
+            config.ultimoBackup = new Date().toISOString();
+            config.backupData = dataStr; // Guardamos los datos directamente
+            
+            // También guardamos en localStorage como backup secundario
+            const backupInfo = {
+                id: Date.now(),
+                fecha: new Date().toISOString(),
+                datos: data,
+                automatico: true
+            };
+            
+            // Mantener solo los últimos 10 backups
+            backups.unshift(backupInfo);
+            if (backups.length > 10) {
+                backups = backups.slice(0, 10);
+            }
+            
+            localStorage.setItem('config', JSON.stringify(config));
+            localStorage.setItem('backups', JSON.stringify(backups));
+            
+            URL.revokeObjectURL(url);
+            
+            // Actualizar UI
+            document.getElementById('ultimoBackup').textContent = new Date().toLocaleString();
+            cargarListaBackups();
+        }
+
+        // ================ MEJORA 1: HISTORIAL ORDENADO Y FILTRADO ================
+        function cargarHistorial() {
+            const container = document.getElementById('lista-historial');
+            let pedidosCompletados = pedidos.filter(p => p.completado);
+            
+            // Ordenar de más reciente a más antiguo
+            pedidosCompletados.sort((a, b) => {
+                return new Date(b.fechaCompletado || b.fecha) - new Date(a.fechaCompletado || a.fecha);
+            });
+            
+            // Aplicar filtro actual
+            pedidosCompletados = aplicarFiltroHistorial(pedidosCompletados);
+            
+            if (pedidosCompletados.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <h3>No hay historial de pedidos</h3>
+                        <p>${filtroHistorialActual !== 'todos' ? 'Intenta con otros filtros' : 'Los pedidos completados aparecerán aquí'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Agrupar por fecha
+            const agrupados = {};
+            pedidosCompletados.forEach(pedido => {
+                const fecha = new Date(pedido.fechaCompletado || pedido.fecha).toLocaleDateString();
+                if (!agrupados[fecha]) agrupados[fecha] = [];
+                agrupados[fecha].push(pedido);
+            });
+            
+            container.innerHTML = Object.entries(agrupados).map(([fecha, pedidosDia]) => `
+                <div style="margin: 16px;">
+                    <h3 style="padding: 8px 16px; background: #e2e8f0; border-radius: 8px;">${fecha}</h3>
+                    ${pedidosDia.map(pedido => `
+                        <div class="pedido-card" onclick="verDetallePedido(${pedido.id})">
+                            <div class="pedido-header">
+                                <div class="cliente-info">
+                                    <h3>${pedido.nombreCliente || 'Cliente'}</h3>
+                                    <div class="telefono">${pedido.telefono}</div>
+                                    <div style="font-size: 0.8rem; color: var(--secondary); margin-top: 4px;">
+                                        <i class="fas fa-calendar"></i> ${new Date(pedido.fechaEntrega).toLocaleDateString('es-ES')}
+                                    </div>
+                                </div>
+                                <div class="pedido-actions">
+                                    <div style="color: var(--success); margin-right: 8px;">
+                                        <i class="fas fa-check-circle"></i> Completado
+                                    </div>
+                                    <button class="btn btn-danger" onclick="event.stopPropagation(); eliminarPedido(${pedido.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="productos-list">
+                                ${pedido.productos.slice(0, 2).map(p => `
+                                    <div class="producto-item">
+                                        <span>${p.cantidad}x ${p.nombre}</span>
+                                        <span class="producto-detalle">($${p.precio} c/u) - $${p.precio * p.cantidad}</span>
+                                    </div>
+                                `).join('')}
+                                ${pedido.productos.length > 2 ? `<div style="color: var(--secondary); font-size: 0.8rem;">... y ${pedido.productos.length - 2} más</div>` : ''}
+                            </div>
+                            
+                            <div style="text-align: right; margin-top: 12px; font-weight: bold;">
+                                Total: $${calcularTotalPedido(pedido)}
+                                ${usuarioLogueado ? `<br><small style="color: #10b981;">Ganancia: $${calcularGananciaPedido(pedido)}</small>` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function cambiarFiltroHistorial(filtro) {
+            filtroHistorialActual = filtro;
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.filtros-historial .filtro-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Limpiar otros filtros
+            document.getElementById('filtroFechaHistorial').value = '';
+            document.getElementById('filtroMesHistorial').value = '';
+            document.getElementById('filtroAnioHistorial').value = new Date().getFullYear().toString();
+            
+            cargarHistorial();
+        }
+
+        function filtrarHistorialPorFecha(fecha) {
+            filtroHistorialActual = 'fecha';
+            cargarHistorial();
+        }
+
+        function filtrarHistorialPorMes(mes) {
+            filtroHistorialActual = 'mes';
+            cargarHistorial();
+        }
+
+        function filtrarHistorialPorAnio(anio) {
+            filtroHistorialActual = 'anio';
+            cargarHistorial();
+        }
+
+        function aplicarFiltroHistorial(pedidosList) {
+            switch (filtroHistorialActual) {
+                case 'hoy':
+                    const hoy = new Date();
+                    hoy.setHours(0, 0, 0, 0);
+                    return pedidosList.filter(p => {
+                        const fechaPedido = new Date(p.fechaCompletado || p.fecha);
+                        fechaPedido.setHours(0, 0, 0, 0);
+                        return fechaPedido.getTime() === hoy.getTime();
+                    });
+                    
+                case 'fecha':
+                    const fechaFiltro = document.getElementById('filtroFechaHistorial').value;
+                    if (!fechaFiltro) return pedidosList;
+                    
+                    const fecha = new Date(fechaFiltro);
+                    fecha.setHours(0, 0, 0, 0);
+                    
+                    return pedidosList.filter(p => {
+                        const fechaPedido = new Date(p.fechaCompletado || p.fecha);
+                        fechaPedido.setHours(0, 0, 0, 0);
+                        return fechaPedido.getTime() === fecha.getTime();
+                    });
+                    
+                case 'mes':
+                    const mes = document.getElementById('filtroMesHistorial').value;
+                    const anioMes = document.getElementById('filtroAnioHistorial').value || new Date().getFullYear().toString();
+                    
+                    if (!mes) return pedidosList;
+                    
+                    const inicioMes = new Date(anioMes, parseInt(mes) - 1, 1);
+                    const finMes = new Date(anioMes, parseInt(mes), 0);
+                    
+                    return pedidosList.filter(p => {
+                        const fechaPedido = new Date(p.fechaCompletado || p.fecha);
+                        return fechaPedido >= inicioMes && fechaPedido <= finMes;
+                    });
+                    
+                case 'anio':
+                    const anio = document.getElementById('filtroAnioHistorial').value;
+                    if (!anio) return pedidosList;
+                    
+                    const inicioAnio = new Date(anio, 0, 1);
+                    const finAnio = new Date(anio, 11, 31);
+                    
+                    return pedidosList.filter(p => {
+                        const fechaPedido = new Date(p.fechaCompletado || p.fecha);
+                        return fechaPedido >= inicioAnio && fechaPedido <= finAnio;
+                    });
+                    
+                default:
+                    return pedidosList;
+            }
+        }
+
+        // ================ MEJORA 2: SISTEMA DE COMPARTIR LISTADOS ================
+        function compartirListadoActual() {
+            if (!listadoSeleccionado || !listadoSeleccionado.productos || listadoSeleccionado.productos.length === 0) {
+                alert('El listado está vacío');
+                return;
+            }
+            
+            // Preparar contenido para compartir
+            const productosDisponibles = listadoSeleccionado.productos.filter(p => p.disponible !== false);
+            const contenido = generarContenidoParaCompartir(productosDisponibles);
+            
+            document.getElementById('fechaActualizacion').textContent = new Date().toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            document.getElementById('contenidoParaCompartir').textContent = contenido;
+            document.getElementById('modalCompartirListado').style.display = 'flex';
+        }
+
+        function generarContenidoParaCompartir(productos) {
+            let contenido = '════════════════════════════════\n';
+            contenido += '🏥 *LISTA DE PRODUCTOS ACTUALIZADA* 🏥\n';
+            contenido += '════════════════════════════════\n\n';
+            contenido += '¡Hola amigos! 👋\n\n';
+            contenido += '📅 *Actualizado:* ' + new Date().toLocaleDateString('es-ES') + '\n\n';
+            contenido += 'Aquí tienen nuestra lista completa:\n\n';
+            
+            // Agrupar productos por categoría
+            const productosPorCategoria = {};
+            productos.forEach(producto => {
+                if (!productosPorCategoria[producto.categoria]) {
+                    productosPorCategoria[producto.categoria] = [];
+                }
+                productosPorCategoria[producto.categoria].push(producto);
+            });
+            
+            // Ordenar categorías
+            const categoriasOrden = ['medicamento', 'inyecciones', 'cremas', 'ovulos', 'suspension', 'operaciones', 'lacteos', 'otros'];
+            
+            categoriasOrden.forEach(categoria => {
+                if (productosPorCategoria[categoria]) {
+                    // Ordenar productos alfabéticamente
+                    productosPorCategoria[categoria].sort((a, b) => a.nombre.localeCompare(b.nombre));
+                    
+                    contenido += obtenerNombreCategoriaCompartir(categoria) + '\n';
+                    
+                    productosPorCategoria[categoria].forEach(producto => {
+                        const emoji = obtenerEmojiCategoria(categoria);
+                        contenido += `${emoji} *${producto.nombre}*`;
+                        
+                        if (producto.presentacion) {
+                            contenido += ` (${producto.presentacion})`;
+                        }
+                        
+                        contenido += ` .................... $${producto.precio}\n`;
+                    });
+                    
+                    contenido += '\n';
+                }
+            });
+            
+            contenido += '════════════════════════════════\n';
+            contenido += '🚚 *DOMICILIOS A $150* 💰\n';
+            contenido += '📞 ¡Llámanos para hacer tu pedido!\n';
+            contenido += '✨ ¡Gracias por tu preferencia! ✨\n';
+            contenido += '════════════════════════════════';
+            
+            return contenido;
+        }
+
+        function obtenerNombreCategoriaCompartir(categoria) {
+            const nombres = {
+                'medicamento': '💊 *MEDICAMENTOS (BLISTER/TABLETAS)*',
+                'inyecciones': '💉 *INYECCIONES*',
+                'cremas': '🧪 *CREMAS/GELES/UNGUENTOS*',
+                'ovulos': '🔴 *ÓVULOS*',
+                'suspension': '🍼 *SUSPENSIONES*',
+                'operaciones': '📌 *MATERIAL DE OPERACIONES*',
+                'lacteos': '🥛 *LÁCTEOS*',
+                'otros': '📦 *OTROS PRODUCTOS*'
+            };
+            return nombres[categoria] || categoria.toUpperCase();
+        }
+
+        function obtenerEmojiCategoria(categoria) {
+            const emojis = {
+                'medicamento': '💊',
+                'inyecciones': '💉',
+                'cremas': '🧪',
+                'ovulos': '🔴',
+                'suspension': '🍼',
+                'operaciones': '📌',
+                'lacteos': '🥛',
+                'otros': '📦'
+            };
+            return emojis[categoria] || '📦';
+        }
+
+        function cerrarModalCompartirListado() {
+            document.getElementById('modalCompartirListado').style.display = 'none';
+        }
+
+        function copiarLista() {
+            const contenido = document.getElementById('contenidoParaCompartir').textContent;
+            
+            navigator.clipboard.writeText(contenido)
+                .then(() => {
+                    alert('¡Lista copiada al portapapeles! 📋');
+                })
+                .catch(err => {
+                    console.error('Error al copiar: ', err);
+                    alert('Error al copiar. Intenta de nuevo.');
+                });
+        }
+
+        function compartirListaWhatsApp() {
+            const contenido = document.getElementById('contenidoParaCompartir').textContent;
+            const mensajeCodificado = encodeURIComponent(contenido);
+            const urlWhatsApp = `https://wa.me/?text=${mensajeCodificado}`;
+            
+            window.open(urlWhatsApp, '_blank');
+        }
+
+        // ================ MEJORA 3: SISTEMA DE DISPONIBILIDAD ================
+        function toggleDisponibilidadProducto(productoId, listadoId) {
+            const listado = listados.find(l => l.id === listadoId);
+            if (!listado || !listado.productos) return;
+            
+            const producto = listado.productos.find(p => p.id === productoId);
+            if (!producto) return;
+            
+            // Cambiar disponibilidad
+            producto.disponible = !producto.disponible;
+            
+            // Actualizar en todos los listados (si el producto está en múltiples listados)
+            listados.forEach(l => {
+                if (l.productos) {
+                    const prodEnListado = l.productos.find(p => p.id === productoId);
+                    if (prodEnListado) {
+                        prodEnListado.disponible = producto.disponible;
+                    }
+                }
+            });
+            
+            guardarEnLocalStorage();
+            
+            if (listadoSeleccionado && listadoSeleccionado.id === listadoId) {
+                cargarProductosListado();
+            }
+            
+            // Mostrar notificación
+            const estado = producto.disponible ? 'disponible ✅' : 'no disponible ❌';
+            console.log(`Producto "${producto.nombre}" marcado como ${estado}`);
+        }
+
+        // ================ MEJORA 4: PRODUCTOS NUEVOS ================
+        function cargarProductosNuevos() {
+            const dosSemanasAtras = new Date();
+            dosSemanasAtras.setDate(dosSemanasAtras.getDate() - 14);
+            
+            let todosProductosNuevos = [];
+            
+            // Recolectar todos los productos nuevos de todos los listados
+            listados.forEach(listado => {
+                if (listado.productos) {
+                    const productosNuevos = listado.productos.filter(p => {
+                        if (!p.fechaCreacion) return false;
+                        const fechaCreacion = new Date(p.fechaCreacion);
+                        return fechaCreacion >= dosSemanasAtras;
+                    });
+                    
+                    todosProductosNuevos = todosProductosNuevos.concat(productosNuevos);
+                }
+            });
+            
+            // Ordenar por fecha de creación (más nuevos primero)
+            todosProductosNuevos.sort((a, b) => {
+                return new Date(b.fechaCreacion || 0) - new Date(a.fechaCreacion || 0);
+            });
+            
+            // Limitar a 10 productos
+            todosProductosNuevos = todosProductosNuevos.slice(0, 10);
+            
+            // Actualizar UI para usuarios logueados
+            const containerUsuario = document.getElementById('nuevos-productos-usuario');
+            if (todosProductosNuevos.length > 0) {
+                containerUsuario.style.display = 'block';
+                containerUsuario.innerHTML = `
+                    <div class="nuevos-container">
+                        <div class="nuevos-title">
+                            <i class="fas fa-star"></i>
+                            <span>🌟 PRODUCTOS NUEVOS 🌟</span>
+                        </div>
+                        <div class="productos-list">
+                            ${todosProductosNuevos.map(producto => `
+                                <div class="producto-card">
+                                    <div class="producto-info">
+                                        <h4>
+                                            ${producto.nombre}
+                                            <span class="producto-nuevo-tag">NUEVO</span>
+                                        </h4>
+                                        <div style="font-size: 0.8rem; color: var(--secondary);">
+                                            <div>Venta: $${producto.precio}</div>
+                                            ${usuarioLogueado ? `<div style="color: #10b981;">Costo: $${producto.precioCosto || 0}</div>` : ''}
+                                            ${producto.presentacion ? ` • ${producto.presentacion}` : ''}
+                                            <span class="categoria-badge categoria-${producto.categoria}">
+                                                ${producto.categoria}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="disponibilidad-badge ${producto.disponible !== false ? 'disponible' : 'no-disponible'}" 
+                                              onclick="toggleDisponibilidadProducto(${producto.id}, ${listadoSeleccionado ? listadoSeleccionado.id : 'null'})">
+                                            <i class="fas fa-${producto.disponible !== false ? 'check' : 'times'}"></i>
+                                            ${producto.disponible !== false ? 'Disponible' : 'No disponible'}
+                                        </span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                containerUsuario.style.display = 'none';
+            }
+            
+            // Actualizar UI para clientes (solo productos disponibles)
+            const containerCliente = document.getElementById('nuevos-productos-cliente');
+            const productosDisponibles = todosProductosNuevos.filter(p => p.disponible !== false);
+            
+            if (productosDisponibles.length > 0) {
+                containerCliente.style.display = 'block';
+                containerCliente.innerHTML = `
+                    <div style="margin: 16px 0;">
+                        <h3 style="padding: 12px; background: linear-gradient(135deg, #fef3c7, #fef7cd); border-radius: 8px; color: #92400e; text-align: center;">
+                            <i class="fas fa-star"></i> ¡PRODUCTOS NUEVOS! <i class="fas fa-star"></i>
+                        </h3>
+                        ${productosDisponibles.map(producto => `
+                            <div class="producto-card">
+                                <div class="producto-info">
+                                    <h4>${producto.nombre}</h4>
+                                    <div style="font-size: 0.8rem; color: var(--secondary);">
+                                        $${producto.precio}
+                                        ${producto.presentacion ? ` • ${producto.presentacion}` : ''}
+                                    </div>
+                                </div>
+                                <div class="producto-precio">
+                                    $${producto.precio}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                containerCliente.style.display = 'none';
+            }
+        }
+
+        // ================ MEJORA 5: GESTIÓN DE BACKUPS ================
+        function cargarListaBackups() {
+            const container = document.getElementById('lista-backups');
+            
+            if (backups.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-database"></i>
+                        <h3>No hay backups</h3>
+                        <p>Los backups automáticos aparecerán aquí</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = backups.map(backup => `
+                <div class="backup-item">
+                    <div class="backup-info">
+                        <strong>${new Date(backup.fecha).toLocaleString()}</strong>
+                        <div style="font-size: 0.8rem; color: var(--secondary);">
+                            ${backup.automatico ? '🔄 Automático' : '💾 Manual'} • ${backup.datos.pedidos ? backup.datos.pedidos.length : 0} pedidos
+                        </div>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="btn" onclick="restaurarBackup(${backup.id})" style="background: var(--primary); color: white; padding: 8px;">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button class="btn" onclick="eliminarBackup(${backup.id})" style="background: var(--danger); color: white; padding: 8px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Actualizar último backup en la UI
+            if (config.ultimoBackup) {
+                document.getElementById('ultimoBackup').textContent = new Date(config.ultimoBackup).toLocaleString();
+            }
+        }
+
+        function restaurarBackup(backupId) {
+            const backup = backups.find(b => b.id === backupId);
+            if (!backup) return;
+            
+            if (confirm('¿Restaurar este backup? Se reemplazarán los datos actuales.')) {
+                pedidos = backup.datos.pedidos || [];
+                listados = backup.datos.listados || [];
+                usuarios = backup.datos.usuarios || [];
+                notificaciones = backup.datos.notificaciones || [];
+                
+                // Actualizar configuración
+                config.ultimoBackup = backup.fecha;
+                
+                guardarEnLocalStorage();
+                cargarPedidosPendientes();
+                cargarListaListados();
+                cargarHistorial();
+                cargarProductosNuevos();
+                alert('Backup restaurado exitosamente!');
+            }
+        }
+
+        function eliminarBackup(backupId) {
+            if (confirm('¿Eliminar este backup?')) {
+                backups = backups.filter(b => b.id !== backupId);
+                localStorage.setItem('backups', JSON.stringify(backups));
+                cargarListaBackups();
+            }
+        }
+
+        function exportarBackup() {
+            const data = {
+                pedidos: pedidos,
+                listados: listados,
+                usuarios: usuarios,
+                notificaciones: notificaciones,
+                fechaBackup: new Date().toISOString(),
+                version: '4.0'
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = config.backupFile; // Usar el mismo archivo siempre
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            // Guardar info del backup
+            const backupInfo = {
+                id: Date.now(),
+                fecha: new Date().toISOString(),
+                datos: data,
+                automatico: false
+            };
+            
+            backups.unshift(backupInfo);
+            config.ultimoBackup = new Date().toISOString();
+            guardarEnLocalStorage();
+            
+            alert('Backup exportado exitosamente!');
+        }
+
+        function importarBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (confirm('¿Estás seguro de importar este backup? Se reemplazarán todos los datos actuales.')) {
+                        pedidos = data.pedidos || [];
+                        listados = data.listados || [];
+                        usuarios = data.usuarios || [];
+                        notificaciones = data.notificaciones || [];
+                        
+                        // Actualizar configuración
+                        config.ultimoBackup = new Date().toISOString();
+                        
+                        // Guardar como backup
+                        const backupInfo = {
+                            id: Date.now(),
+                            fecha: new Date().toISOString(),
+                            datos: data,
+                            automatico: false
+                        };
+                        
+                        backups.unshift(backupInfo);
+                        guardarEnLocalStorage();
+                        
+                        cargarPedidosPendientes();
+                        cargarListaListados();
+                        cargarHistorial();
+                        cargarProductosNuevos();
+                        alert('Backup importado exitosamente!');
+                    }
+                } catch (error) {
+                    alert('Error al importar el backup: Archivo inválido');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // ================ MEJORA 6: ESTADÍSTICAS MEJORADAS ================
+        function mostrarEstadisticas(pedidosFiltrados, periodo) {
+            const container = document.getElementById('estadisticas-contenido');
+            const detallesContainer = document.getElementById('detalles-estadisticas');
+            
+            if (pedidosFiltrados.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>No hay datos para mostrar</h3>
+                        <p>No hay pedidos completados en el período seleccionado</p>
+                    </div>
+                `;
+                detallesContainer.innerHTML = '';
+                return;
+            }
+            
+            // Calcular estadísticas básicas
+            const totalVentas = pedidosFiltrados.reduce((sum, p) => sum + calcularTotalPedido(p), 0);
+            const promedioVenta = totalVentas / pedidosFiltrados.length;
+            const totalProductos = pedidosFiltrados.reduce((sum, p) => sum + p.productos.reduce((sumProd, prod) => sumProd + prod.cantidad, 0), 0);
+            
+            // Calcular costo total y ganancias
+            let totalCosto = 0;
+            let gananciaTotal = 0;
+            let gananciaDomicilio = 0;
+            let costoProductos = 0;
+            
+            pedidosFiltrados.forEach(pedido => {
+                const costoPedido = pedido.productos.reduce((sum, productoPedido) => {
+                    const productoOriginal = buscarProductoOriginal(productoPedido.id);
+                    if (productoOriginal && productoOriginal.precioCosto) {
+                        return sum + (productoOriginal.precioCosto * productoPedido.cantidad);
+                    }
+                    return sum;
+                }, 0);
+                
+                totalCosto += costoPedido;
+                costoProductos += costoPedido;
+                gananciaTotal += calcularTotalPedido(pedido) - costoPedido;
+                gananciaDomicilio += pedido.precioDomicilio || 0;
+            });
+            
+            // Calcular márgenes
+            const margenGanancia = totalVentas > 0 ? ((gananciaTotal / totalVentas) * 100) : 0;
+            const costoPromedio = pedidosFiltrados.length > 0 ? (totalCosto / pedidosFiltrados.length) : 0;
+            
+            let statsHTML = `
+                <div class="stat-card">
+                    <div class="stat-value">${pedidosFiltrados.length}</div>
+                    <div class="stat-label">Total Pedidos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">$${totalVentas.toLocaleString()}</div>
+                    <div class="stat-label">Total Ventas</div>
+                </div>
+                <div class="stat-card" style="background: #fef2f2;">
+                    <div class="stat-value" style="color: #dc2626;">$${totalCosto.toLocaleString()}</div>
+                    <div class="stat-label">Costo Total</div>
+                </div>
+                <div class="stat-card" style="background: #f0fdf4;">
+                    <div class="stat-value" style="color: #10b981;">$${gananciaTotal.toLocaleString()}</div>
+                    <div class="stat-label">Ganancia Neta</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${margenGanancia.toFixed(1)}%</div>
+                    <div class="stat-label">Margen Ganancia</div>
+                </div>
+                <div class="stat-card" style="background: #f0fdf4;">
+                    <div class="stat-value" style="color: #10b981;">$${gananciaDomicilio.toLocaleString()}</div>
+                    <div class="stat-label">Ganancia Domicilios</div>
+                </div>
+            `;
+            
+            container.innerHTML = statsHTML;
+            
+            let detallesHTML = `
+                <div class="pedido-detalle">
+                    <div class="detalle-item">
+                        <span class="detalle-label">Costo Promedio por Pedido:</span>
+                        <span class="detalle-value">$${costoPromedio.toFixed(2)}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Ganancia Promedio por Pedido:</span>
+                        <span class="detalle-value" style="color: #10b981;">$${(gananciaTotal / pedidosFiltrados.length).toFixed(2)}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Total a Pagar (Costos):</span>
+                        <span class="detalle-value" style="color: #dc2626; font-weight: bold;">$${totalCosto.toLocaleString()}</span>
+                    </div>
+                    <div class="detalle-item">
+                        <span class="detalle-label">Total a Recibir (Ganancias):</span>
+                        <span class="detalle-value" style="color: #10b981; font-weight: bold;">$${gananciaTotal.toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+            
+            // Productos más vendidos con costos
+            const productosVendidos = {};
+            pedidosFiltrados.forEach(pedido => {
+                pedido.productos.forEach(producto => {
+                    if (!productosVendidos[producto.nombre]) {
+                        productosVendidos[producto.nombre] = {
+                            cantidad: 0,
+                            ventas: 0,
+                            costo: 0,
+                            ganancia: 0
+                        };
+                    }
+                    productosVendidos[producto.nombre].cantidad += producto.cantidad;
+                    productosVendidos[producto.nombre].ventas += producto.precio * producto.cantidad;
+                    
+                    const productoOriginal = buscarProductoOriginal(producto.id);
+                    if (productoOriginal && productoOriginal.precioCosto) {
+                        const costoProducto = productoOriginal.precioCosto * producto.cantidad;
+                        productosVendidos[producto.nombre].costo += costoProducto;
+                        productosVendidos[producto.nombre].ganancia += (producto.precio * producto.cantidad) - costoProducto;
+                    }
+                });
+            });
+            
+            const productosTop = Object.entries(productosVendidos)
+                .sort((a, b) => b[1].cantidad - a[1].cantidad)
+                .slice(0, 5);
+            
+            if (productosTop.length > 0) {
+                detallesHTML += `
+                    <h3 style="margin-top: 24px;">Productos Más Vendidos (con costos)</h3>
+                    <div class="productos-list">
+                        ${productosTop.map(([producto, datos]) => `
+                            <div class="producto-item">
+                                <div>
+                                    <strong>${producto}</strong>
+                                    <div style="font-size: 0.8rem; color: var(--secondary);">
+                                        ${datos.cantidad} unidades • Ventas: $${datos.ventas}
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="color: #dc2626; font-size: 0.9rem;">Costo: $${datos.costo}</div>
+                                    <div style="color: #10b981; font-weight: bold;">Ganancia: $${datos.ganancia}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            detallesContainer.innerHTML = detallesHTML;
+        }
+
+        // ================ FUNCIONES ORIGINALES (MODIFICADAS PARA LAS MEJORAS) ================
+        
         // Sistema de Autenticación
         function inicializarBaseDeDatos() {
             // Agregar usuario administrador si no existe
             const adminExiste = usuarios.some(u => u.usuario === ADMIN_USER.usuario);
             if (!adminExiste) {
                 usuarios.push(ADMIN_USER);
+                guardarEnLocalStorage();
+            }
+            
+            // Inicializar backups si no existen
+            if (!config.ultimoBackup) {
+                config.ultimoBackup = new Date().toISOString();
                 guardarEnLocalStorage();
             }
         }
@@ -1480,7 +2547,7 @@
                 localStorage.setItem('usuarioLogueado', JSON.stringify(usuarioLogueado));
                 cargarVistaSegunLogin();
                 cerrarModalLogin();
-                alert(`¡Bienvenido ${usuarioEncontrado.usuario}!`);
+                cargarProductosNuevos();
             } else {
                 alert('Usuario o contraseña incorrectos');
             }
@@ -1660,8 +2727,10 @@
                 cargarEstadisticas();
             } else if (tabName === 'listados') {
                 cargarListaListados();
+                cargarProductosNuevos();
             } else if (tabName === 'configuracion') {
                 actualizarEstadisticas();
+                cargarListaBackups();
             }
         }
 
@@ -1708,9 +2777,19 @@
                     </div>
                     <div class="listado-count">
                         ${listado.productos ? listado.productos.length : 0} productos
+                        <button class="btn-share-list" onclick="event.stopPropagation(); compartirListado(${listado.id})">
+                            <i class="fas fa-share-alt"></i> Compartir
+                        </button>
                     </div>
                 </div>
             `).join('');
+        }
+
+        function compartirListado(listadoId) {
+            listadoSeleccionado = listados.find(l => l.id === listadoId);
+            if (!listadoSeleccionado) return;
+            
+            compartirListadoActual();
         }
 
         function abrirModalNuevoListado() {
@@ -1765,6 +2844,7 @@
                 listados = listados.filter(l => l.id !== id);
                 guardarEnLocalStorage();
                 cargarListaListados();
+                cargarProductosNuevos();
             }
         }
 
@@ -1804,29 +2884,42 @@
                     <h3 style="padding: 8px 12px; background: #e2e8f0; border-radius: 8px; font-size: 0.9rem;">
                         ${obtenerNombreCategoria(grupo.categoria)} (${grupo.productos.length})
                     </h3>
-                    ${grupo.productos.map(producto => `
-                        <div class="producto-card">
-                            <div class="producto-info">
-                                <h4>${producto.nombre}</h4>
-                                <div style="font-size: 0.8rem; color: var(--secondary);">
-                                    <div>Venta: $${producto.precio}</div>
-                                    ${usuarioLogueado ? `<div style="color: #10b981;">Costo: $${producto.precioCosto || 0}</div>` : ''}
-                                    ${producto.presentacion ? ` • ${producto.presentacion}` : ''}
-                                    <span class="categoria-badge categoria-${producto.categoria}">
-                                        ${producto.categoria}
+                    ${grupo.productos.map(producto => {
+                        // Calcular si es nuevo (menos de 2 semanas)
+                        const esNuevo = producto.fechaCreacion ? 
+                            (new Date() - new Date(producto.fechaCreacion)) < (14 * 24 * 60 * 60 * 1000) : false;
+                        
+                        return `
+                            <div class="producto-card">
+                                <div class="producto-info">
+                                    <h4>
+                                        ${producto.nombre}
+                                        ${esNuevo ? '<span class="producto-nuevo-tag">NUEVO</span>' : ''}
+                                    </h4>
+                                    <div style="font-size: 0.8rem; color: var(--secondary);">
+                                        <div>Venta: $${producto.precio}</div>
+                                        ${usuarioLogueado ? `<div style="color: #10b981;">Costo: $${producto.precioCosto || 0}</div>` : ''}
+                                        ${producto.presentacion ? ` • ${producto.presentacion}` : ''}
+                                        <span class="categoria-badge categoria-${producto.categoria}">
+                                            ${producto.categoria}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="pedido-actions">
+                                    <span class="disponibilidad-badge ${producto.disponible !== false ? 'disponible' : 'no-disponible'}" 
+                                          onclick="toggleDisponibilidadProducto(${producto.id}, ${listadoSeleccionado.id})">
+                                        <i class="fas fa-${producto.disponible !== false ? 'check' : 'times'}"></i>
                                     </span>
+                                    <button class="btn btn-edit" onclick="editarProducto(${producto.id})">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger" onclick="eliminarProducto(${producto.id})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="pedido-actions">
-                                <button class="btn btn-edit" onclick="editarProducto(${producto.id})">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-danger" onclick="eliminarProducto(${producto.id})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `).join('')}
+                        `;
+                    }).join('')}
                 </div>
             `).join('');
         }
@@ -1877,11 +2970,12 @@
             return nombres[categoria] || categoria;
         }
 
-        // Funciones de Productos (MODIFICADAS para incluir precio de costo)
+        // Funciones de Productos
         function abrirModalNuevoProducto() {
             productoEditando = null;
             document.getElementById('modalProductoTitulo').textContent = 'Nuevo Producto';
             document.getElementById('formProducto').reset();
+            document.getElementById('productoDisponible').checked = true;
             document.getElementById('modalNuevoProducto').style.display = 'flex';
         }
 
@@ -1898,7 +2992,9 @@
                 precio: parseInt(document.getElementById('precioProducto').value),
                 precioCosto: parseInt(document.getElementById('precioCostoProducto').value),
                 categoria: document.getElementById('categoriaProducto').value,
-                presentacion: document.getElementById('presentacionProducto').value || ''
+                presentacion: document.getElementById('presentacionProducto').value || '',
+                disponible: document.getElementById('productoDisponible').checked,
+                fechaCreacion: productoEditando ? (productoEditando.fechaCreacion || new Date().toISOString()) : new Date().toISOString()
             };
             
             if (productoEditando) {
@@ -1920,10 +3016,15 @@
             }
             
             guardarEnLocalStorage();
+            
             if (listadoSeleccionado) {
                 cargarProductosListado();
             }
+            
             cerrarModalNuevoProducto();
+            
+            // Actualizar productos nuevos
+            cargarProductosNuevos();
             
             alert('Producto guardado exitosamente!');
         }
@@ -1944,6 +3045,7 @@
             document.getElementById('precioCostoProducto').value = productoEditando.precioCosto || 0;
             document.getElementById('categoriaProducto').value = productoEditando.categoria;
             document.getElementById('presentacionProducto').value = productoEditando.presentacion || '';
+            document.getElementById('productoDisponible').checked = productoEditando.disponible !== false;
             
             document.getElementById('modalNuevoProducto').style.display = 'flex';
         }
@@ -1958,6 +3060,7 @@
                 if (listadoSeleccionado) {
                     cargarProductosListado();
                 }
+                cargarProductosNuevos();
             }
         }
 
@@ -2039,6 +3142,9 @@
             guardarEnLocalStorage();
             cargarListaListados();
             cerrarModalImportarProductos();
+            
+            // Actualizar productos nuevos
+            cargarProductosNuevos();
             
             let mensaje = `Se importaron ${nuevosProductos.length} productos nuevos`;
             if (productosDuplicados > 0) {
@@ -2134,7 +3240,9 @@
                         precio: precio,
                         precioCosto: Math.round(precio * 0.7), // Establece el costo como 70% del precio de venta
                         categoria: categoria,
-                        presentacion: presentacion
+                        presentacion: presentacion,
+                        disponible: true,
+                        fechaCreacion: new Date().toISOString()
                     };
                 }
             }
@@ -2227,10 +3335,11 @@
             const container = document.getElementById('lista-productos-cliente');
             let todosLosProductos = [];
             
-            // Obtener todos los productos de todos los listados
+            // Obtener todos los productos de todos los listados (solo disponibles)
             listados.forEach(listado => {
                 if (listado.productos) {
-                    todosLosProductos = todosLosProductos.concat(listado.productos);
+                    const productosDisponibles = listado.productos.filter(p => p.disponible !== false);
+                    todosLosProductos = todosLosProductos.concat(productosDisponibles);
                 }
             });
             
@@ -2278,6 +3387,7 @@
             const container = document.getElementById('detalle-pedido-contenido');
             const total = calcularTotalPedido(pedido);
             const ganancia = calcularGananciaPedido(pedido);
+            const costo = calcularCostoPedido(pedido);
             
             container.innerHTML = `
                 <div class="pedido-detalle">
@@ -2308,6 +3418,10 @@
                     </div>
                     ` : ''}
                     ${usuarioLogueado ? `
+                    <div class="detalle-item" style="color: #dc2626; font-weight: bold;">
+                        <span class="detalle-label">Costo Total:</span>
+                        <span class="detalle-value">$${costo}</span>
+                    </div>
                     <div class="detalle-item" style="color: #10b981; font-weight: bold;">
                         <span class="detalle-label">Ganancia:</span>
                         <span class="detalle-value">$${ganancia}</span>
@@ -2320,13 +3434,22 @@
                     ${pedido.productos.map(p => {
                         const productoOriginal = buscarProductoOriginal(p.id);
                         const gananciaProducto = productoOriginal ? (p.precio - (productoOriginal.precioCosto || 0)) * p.cantidad : 0;
+                        const costoProducto = productoOriginal ? (productoOriginal.precioCosto || 0) * p.cantidad : 0;
+                        
                         return `
                             <div class="producto-item">
-                                <span>${p.cantidad}x ${p.nombre}</span>
-                                <span class="producto-detalle">
-                                    ($${p.precio} c/u) - $${p.precio * p.cantidad}
-                                    ${usuarioLogueado && productoOriginal ? `<br><span style="color: #10b981;">Ganancia: $${gananciaProducto}</span>` : ''}
-                                </span>
+                                <div>
+                                    <span>${p.cantidad}x ${p.nombre}</span>
+                                    <span class="producto-detalle">
+                                        ($${p.precio} c/u) - $${p.precio * p.cantidad}
+                                    </span>
+                                </div>
+                                ${usuarioLogueado && productoOriginal ? `
+                                <div style="text-align: right;">
+                                    <div style="color: #dc2626; font-size: 0.8rem;">Costo: $${costoProducto}</div>
+                                    <div style="color: #10b981; font-size: 0.8rem;">Ganancia: $${gananciaProducto}</div>
+                                </div>
+                                ` : ''}
                             </div>
                         `;
                     }).join('')}
@@ -2334,7 +3457,13 @@
                 
                 <div class="total-section">
                     Total: $${total}
-                    ${usuarioLogueado ? `<br><small style="color: #10b981; font-size: 1rem;">Ganancia Total: $${ganancia}</small>` : ''}
+                    ${usuarioLogueado ? `
+                    <br>
+                    <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 1rem;">
+                        <span style="color: #dc2626;">Costo: $${costo}</span>
+                        <span style="color: #10b981;">Ganancia: $${ganancia}</span>
+                    </div>
+                    ` : ''}
                 </div>
             `;
             
@@ -2343,6 +3472,17 @@
             window.totalACompartir = total;
             
             document.getElementById('modalDetallePedido').style.display = 'flex';
+        }
+
+        function calcularCostoPedido(pedido) {
+            let costoTotal = 0;
+            pedido.productos.forEach(productoPedido => {
+                const productoOriginal = buscarProductoOriginal(productoPedido.id);
+                if (productoOriginal && productoOriginal.precioCosto) {
+                    costoTotal += productoOriginal.precioCosto * productoPedido.cantidad;
+                }
+            });
+            return costoTotal;
         }
 
         function cerrarModalDetallePedido() {
@@ -2580,6 +3720,7 @@
                     pedido.fechaCompletado = new Date().toISOString();
                     guardarEnLocalStorage();
                     cargarPedidosPendientes();
+                    cargarHistorial();
                 }
             }
         }
@@ -2589,6 +3730,7 @@
                 pedidos = pedidos.filter(p => p.id !== id);
                 guardarEnLocalStorage();
                 cargarPedidosPendientes();
+                cargarHistorial();
             }
         }
 
@@ -2640,17 +3782,21 @@
                     <h4 style="padding: 8px; background: #f1f5f9; border-radius: 6px; font-size: 0.8rem;">
                         ${obtenerNombreCategoria(grupo.categoria)}
                     </h4>
-                    ${grupo.productos.map(producto => `
-                        <div class="checkbox-group" style="padding: 8px; border-bottom: 1px solid #f1f5f9;">
-                            <input type="checkbox" id="prod-${producto.id}" value="${producto.id}">
-                            <label for="prod-${producto.id}" style="flex: 1;">
-                                <strong>${producto.nombre}</strong> - $${producto.precio}
-                                ${usuarioLogueado && producto.precioCosto ? `<br><small style="color: #10b981;">Costo: $${producto.precioCosto}</small>` : ''}
-                                ${producto.presentacion ? ` (${producto.presentacion})` : ''}
-                            </label>
-                            <input type="number" min="1" value="1" style="width: 60px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px;" id="cant-${producto.id}">
-                        </div>
-                    `).join('')}
+                    ${grupo.productos.map(producto => {
+                        if (producto.disponible === false) return '';
+                        
+                        return `
+                            <div class="checkbox-group" style="padding: 8px; border-bottom: 1px solid #f1f5f9;">
+                                <input type="checkbox" id="prod-${producto.id}" value="${producto.id}">
+                                <label for="prod-${producto.id}" style="flex: 1;">
+                                    <strong>${producto.nombre}</strong> - $${producto.precio}
+                                    ${usuarioLogueado && producto.precioCosto ? `<br><small style="color: #10b981;">Costo: $${producto.precioCosto}</small>` : ''}
+                                    ${producto.presentacion ? ` (${producto.presentacion})` : ''}
+                                </label>
+                                <input type="number" min="1" value="1" style="width: 60px; padding: 4px; border: 1px solid #cbd5e1; border-radius: 4px;" id="cant-${producto.id}">
+                            </div>
+                        `;
+                    }).join('')}
                 </div>
             `).join('');
         }
@@ -2671,7 +3817,7 @@
                 const checkbox = document.getElementById(`prod-${producto.id}`);
                 const cantidadInput = document.getElementById(`cant-${producto.id}`);
                 
-                if (checkbox && checkbox.checked) {
+                if (checkbox && checkbox.checked && producto.disponible !== false) {
                     const cantidad = parseInt(cantidadInput.value) || 1;
                     
                     // Verificar si el producto ya está seleccionado
@@ -2751,7 +3897,7 @@
             });
         }
 
-        // Funciones de Estadísticas (MODIFICADAS para incluir ganancias)
+        // Funciones de Estadísticas
         function cargarEstadisticas() {
             const periodo = document.getElementById('filtroPeriodo').value;
             const mes = document.getElementById('filtroMes').value;
@@ -2811,169 +3957,6 @@
             }
             
             mostrarEstadisticas(pedidosFiltrados, periodo);
-        }
-
-        function mostrarEstadisticas(pedidosFiltrados, periodo) {
-            const container = document.getElementById('estadisticas-contenido');
-            const detallesContainer = document.getElementById('detalles-estadisticas');
-            
-            if (pedidosFiltrados.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-chart-bar"></i>
-                        <h3>No hay datos para mostrar</h3>
-                        <p>No hay pedidos completados en el período seleccionado</p>
-                    </div>
-                `;
-                detallesContainer.innerHTML = '';
-                return;
-            }
-            
-            // Calcular estadísticas básicas
-            const totalVentas = pedidosFiltrados.reduce((sum, p) => sum + calcularTotalPedido(p), 0);
-            const promedioVenta = totalVentas / pedidosFiltrados.length;
-            const totalProductos = pedidosFiltrados.reduce((sum, p) => sum + p.productos.reduce((sumProd, prod) => sumProd + prod.cantidad, 0), 0);
-            
-            // Calcular costo total y ganancias (SOLO PARA USUARIOS LOGUEADOS)
-            let totalCosto = 0;
-            let gananciaTotal = 0;
-            let gananciaDomicilio = 0;
-            
-            if (usuarioLogueado) {
-                pedidosFiltrados.forEach(pedido => {
-                    const costoPedido = pedido.productos.reduce((sum, productoPedido) => {
-                        const productoOriginal = buscarProductoOriginal(productoPedido.id);
-                        if (productoOriginal && productoOriginal.precioCosto) {
-                            return sum + (productoOriginal.precioCosto * productoPedido.cantidad);
-                        }
-                        return sum;
-                    }, 0);
-                    totalCosto += costoPedido;
-                    gananciaTotal += calcularTotalPedido(pedido) - costoPedido;
-                    gananciaDomicilio += pedido.precioDomicilio || 0;
-                });
-            }
-            
-            // Productos más vendidos
-            const productosVendidos = {};
-            pedidosFiltrados.forEach(pedido => {
-                pedido.productos.forEach(producto => {
-                    if (!productosVendidos[producto.nombre]) {
-                        productosVendidos[producto.nombre] = {
-                            cantidad: 0,
-                            ganancia: 0
-                        };
-                    }
-                    productosVendidos[producto.nombre].cantidad += producto.cantidad;
-                    
-                    if (usuarioLogueado) {
-                        const productoOriginal = buscarProductoOriginal(producto.id);
-                        if (productoOriginal && productoOriginal.precioCosto) {
-                            productosVendidos[producto.nombre].ganancia += 
-                                (producto.precio - productoOriginal.precioCosto) * producto.cantidad;
-                        }
-                    }
-                });
-            });
-            
-            const productosTop = Object.entries(productosVendidos)
-                .sort((a, b) => b[1].cantidad - a[1].cantidad)
-                .slice(0, 5);
-            
-            // Ventas por día/mes
-            const ventasPorTiempo = {};
-            const gananciasPorTiempo = {};
-            
-            pedidosFiltrados.forEach(pedido => {
-                const fecha = new Date(pedido.fechaCompletado);
-                let clave;
-                
-                if (periodo === 'dia' || periodo === 'semana') {
-                    clave = fecha.toLocaleDateString('es-ES');
-                } else {
-                    clave = `${fecha.getMonth() + 1}/${fecha.getFullYear()}`;
-                }
-                
-                if (!ventasPorTiempo[clave]) {
-                    ventasPorTiempo[clave] = 0;
-                    gananciasPorTiempo[clave] = 0;
-                }
-                ventasPorTiempo[clave] += calcularTotalPedido(pedido);
-                gananciasPorTiempo[clave] += calcularGananciaPedido(pedido);
-            });
-            
-            let statsHTML = `
-                <div class="stat-card">
-                    <div class="stat-value">${pedidosFiltrados.length}</div>
-                    <div class="stat-label">Total Pedidos</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">$${totalVentas.toLocaleString()}</div>
-                    <div class="stat-label">Total Ventas</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">$${promedioVenta.toFixed(2)}</div>
-                    <div class="stat-label">Promedio por Pedido</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">${totalProductos}</div>
-                    <div class="stat-label">Total Productos</div>
-                </div>
-            `;
-            
-            // Agregar estadísticas de ganancias solo para usuarios logueados
-            if (usuarioLogueado) {
-                statsHTML += `
-                    <div class="stat-card" style="background: #f0fdf4;">
-                        <div class="stat-value" style="color: #10b981;">$${gananciaTotal.toLocaleString()}</div>
-                        <div class="stat-label">Ganancia Neta</div>
-                    </div>
-                    <div class="stat-card" style="background: #f0fdf4;">
-                        <div class="stat-value" style="color: #10b981;">$${gananciaDomicilio.toLocaleString()}</div>
-                        <div class="stat-label">Ganancia Domicilios</div>
-                    </div>
-                `;
-            }
-            
-            container.innerHTML = statsHTML;
-            
-            let detallesHTML = '';
-            
-            if (productosTop.length > 0) {
-                detallesHTML += `
-                    <h3>Productos Más Vendidos</h3>
-                    <div class="productos-list">
-                        ${productosTop.map(([producto, datos]) => `
-                            <div class="producto-item">
-                                <span>${producto}</span>
-                                <div>
-                                    <div>${datos.cantidad} unidades</div>
-                                    ${usuarioLogueado && datos.ganancia > 0 ? 
-                                        `<div style="color: #10b981; font-size: 0.8rem;">Ganancia: $${datos.ganancia}</div>` : ''}
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }
-            
-            detallesHTML += `
-                <h3 style="margin-top: 24px;">Ventas por ${periodo === 'dia' || periodo === 'semana' ? 'Día' : 'Mes'}</h3>
-                <div class="productos-list">
-                    ${Object.entries(ventasPorTiempo).map(([fecha, venta]) => `
-                        <div class="producto-item">
-                            <span>${fecha}</span>
-                            <div>
-                                <div>Ventas: $${venta.toLocaleString()}</div>
-                                ${usuarioLogueado && gananciasPorTiempo[fecha] ? 
-                                    `<div style="color: #10b981; font-size: 0.8rem;">Ganancia: $${gananciasPorTiempo[fecha].toLocaleString()}</div>` : ''}
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            
-            detallesContainer.innerHTML = detallesHTML;
         }
 
         function generarPDF() {
@@ -3063,8 +4046,9 @@
             doc.text(`Total Productos Vendidos: ${totalProductos}`, 20, 85);
             
             if (usuarioLogueado) {
-                doc.setTextColor(16, 185, 129); // Color verde para ganancias
+                doc.setTextColor(220, 38, 38); // Color rojo para costos
                 doc.text(`Costo Total: $${totalCosto.toLocaleString()}`, 20, 95);
+                doc.setTextColor(16, 185, 129); // Color verde para ganancias
                 doc.text(`Ganancia Neta: $${gananciaTotal.toLocaleString()}`, 20, 105);
                 doc.setTextColor(0, 0, 0); // Volver a color negro
             }
@@ -3101,60 +4085,6 @@
             doc.save(`reporte-ventas-${new Date().toISOString().split('T')[0]}.pdf`);
         }
 
-        // Funciones de Backup y Configuración
-        function exportarBackup() {
-            const data = {
-                pedidos: pedidos,
-                listados: listados,
-                usuarios: usuarios,
-                notificaciones: notificaciones,
-                fechaBackup: new Date().toISOString(),
-                version: '3.0' // Versión actualizada con precio de costo
-            };
-            
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `backup-delivery-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
-            alert('Backup exportado exitosamente!');
-        }
-
-        function importarBackup(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    
-                    if (confirm('¿Estás seguro de importar este backup? Se reemplazarán todos los datos actuales.')) {
-                        pedidos = data.pedidos || [];
-                        listados = data.listados || [];
-                        usuarios = data.usuarios || [];
-                        notificaciones = data.notificaciones || [];
-                        guardarEnLocalStorage();
-                        cargarPedidosPendientes();
-                        cargarListaListados();
-                        actualizarEstadisticas();
-                        alert('Backup importado exitosamente!');
-                    }
-                } catch (error) {
-                    alert('Error al importar el backup: Archivo inválido');
-                }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
-        }
-
         function limpiarTodo() {
             if (confirm('¿ESTÁS SEGURO DE LIMPIAR TODO? Se eliminarán todos los pedidos, listados y productos. Esta acción no se puede deshacer.')) {
                 pedidos = [];
@@ -3162,7 +4092,8 @@
                 guardarEnLocalStorage();
                 cargarPedidosPendientes();
                 cargarListaListados();
-                actualizarEstadisticas();
+                cargarHistorial();
+                cargarProductosNuevos();
                 alert('Todos los datos han sido eliminados');
             }
         }
@@ -3192,85 +4123,6 @@
 
         function cerrarModalImportarProductos() {
             document.getElementById('modalImportarProductos').style.display = 'none';
-        }
-
-        // Funciones de LocalStorage
-        function guardarEnLocalStorage() {
-            localStorage.setItem('pedidos', JSON.stringify(pedidos));
-            localStorage.setItem('listados', JSON.stringify(listados));
-            localStorage.setItem('usuarios', JSON.stringify(usuarios));
-            localStorage.setItem('notificaciones', JSON.stringify(notificaciones));
-            if (usuarioLogueado) {
-                localStorage.setItem('usuarioLogueado', JSON.stringify(usuarioLogueado));
-            }
-            actualizarEstadisticas();
-        }
-
-        // Funciones de Historial
-        function cargarHistorial() {
-            const container = document.getElementById('lista-historial');
-            const pedidosCompletados = pedidos.filter(p => p.completado);
-            
-            if (pedidosCompletados.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-history"></i>
-                        <h3>No hay historial de pedidos</h3>
-                        <p>Los pedidos completados aparecerán aquí</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Agrupar por fecha
-            const agrupados = {};
-            pedidosCompletados.forEach(pedido => {
-                const fecha = new Date(pedido.fechaCompletado || pedido.fecha).toLocaleDateString();
-                if (!agrupados[fecha]) agrupados[fecha] = [];
-                agrupados[fecha].push(pedido);
-            });
-            
-            container.innerHTML = Object.entries(agrupados).map(([fecha, pedidosDia]) => `
-                <div style="margin: 16px;">
-                    <h3 style="padding: 8px 16px; background: #e2e8f0; border-radius: 8px;">${fecha}</h3>
-                    ${pedidosDia.map(pedido => `
-                        <div class="pedido-card" onclick="verDetallePedido(${pedido.id})">
-                            <div class="pedido-header">
-                                <div class="cliente-info">
-                                    <h3>${pedido.nombreCliente || 'Cliente'}</h3>
-                                    <div class="telefono">${pedido.telefono}</div>
-                                    <div style="font-size: 0.8rem; color: var(--secondary); margin-top: 4px;">
-                                        <i class="fas fa-calendar"></i> ${new Date(pedido.fechaEntrega).toLocaleDateString('es-ES')}
-                                    </div>
-                                </div>
-                                <div class="pedido-actions">
-                                    <div style="color: var(--success); margin-right: 8px;">
-                                        <i class="fas fa-check-circle"></i> Completado
-                                    </div>
-                                    <button class="btn btn-danger" onclick="event.stopPropagation(); eliminarPedido(${pedido.id})">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="productos-list">
-                                ${pedido.productos.slice(0, 2).map(p => `
-                                    <div class="producto-item">
-                                        <span>${p.cantidad}x ${p.nombre}</span>
-                                        <span class="producto-detalle">($${p.precio} c/u) - $${p.precio * p.cantidad}</span>
-                                    </div>
-                                `).join('')}
-                                ${pedido.productos.length > 2 ? `<div style="color: var(--secondary); font-size: 0.8rem;">... y ${pedido.productos.length - 2} más</div>` : ''}
-                            </div>
-                            
-                            <div style="text-align: right; margin-top: 12px; font-weight: bold;">
-                                Total: $${calcularTotalPedido(pedido)}
-                                ${usuarioLogueado ? `<br><small style="color: #10b981;">Ganancia: $${calcularGananciaPedido(pedido)}</small>` : ''}
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
         }
     </script>
 </body>
