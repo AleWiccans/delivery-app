@@ -430,6 +430,8 @@
         .categoria-operaciones { background: #fef7cd; color: #854d0e; }
         .categoria-lacteos { background: #ffedd5; color: #9a3412; }
         .categoria-colirio { background: #e0f2fe; color: #0369a1; }
+        .categoria-gotas { background: #cffafe; color: #0891b2; } /* NUEVA CATEGORÍA */
+        .categoria-losion { background: #fae8ff; color: #a21caf; } /* NUEVA CATEGORÍA */
         .categoria-otros { background: #f1f5f9; color: #475569; }
 
         /* Botones de acción en productos Mobile */
@@ -943,6 +945,132 @@
             gap: 8px;
         }
 
+        /* ===== NUEVOS ESTILOS PARA EL MODAL DE DETALLE DE PRODUCTO ===== */
+        .producto-detalle-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .producto-imagen-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .producto-imagen {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .producto-imagen-placeholder {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary);
+            font-size: 3rem;
+            opacity: 0.5;
+        }
+
+        .producto-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 8px 0;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        .info-value.precio {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .indicaciones-box {
+            background: #f0f9ff;
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            margin: 8px 0;
+        }
+
+        .indicaciones-box h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .indicaciones-texto {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        /* Estilos para subir imagen */
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px dashed #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload-container:hover {
+            border-color: var(--primary);
+            background: #f1f5f9;
+        }
+
+        .image-preview {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .image-upload-input {
+            display: none;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 480px) {
             .header h1 {
@@ -1314,7 +1442,7 @@
                         <input type="tel" id="telefonoCliente" class="form-control" placeholder="Ej: 12345678" required>
                     </div>
                     
-                    <!-- MEJORA 2: Selector de quién consiguió al cliente -->
+                    <!-- Selector de quién consiguió al cliente -->
                     <div class="form-group">
                         <label for="quienConsiguioCliente">¿Quién consiguió este cliente? *</label>
                         <select id="quienConsiguioCliente" class="form-control" required onchange="actualizarTotalSegunQuienConsiguio()">
@@ -1447,7 +1575,7 @@
                     <i class="fab fa-whatsapp"></i> Compartir con Cliente
                 </button>
                 
-                <!-- MEJORA 3: Botón para compartir con proveedora -->
+                <!-- Botón para compartir con proveedora -->
                 <button class="btn-share-provider" onclick="compartirConProveedora()" id="btnCompartirProveedora" style="display: none;">
                     <i class="fas fa-user-tie"></i> Compartir con Proveedora
                 </button>
@@ -1551,7 +1679,7 @@
             </div>
         </div>
 
-        <!-- Modal para Nuevo Producto -->
+        <!-- Modal para Nuevo Producto (MEJORADO con campos de gramaje, indicaciones e imagen) -->
         <div id="modalNuevoProducto" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1562,12 +1690,40 @@
                 <form id="formProducto">
                     <input type="hidden" id="productoId">
                     
+                    <!-- NUEVO: Campo para imagen -->
+                    <div class="form-group">
+                        <label>Imagen del Producto</label>
+                        <div class="image-upload-container" onclick="document.getElementById('imagenProductoInput').click()">
+                            <img id="imagenProductoPreview" class="image-preview" src="" alt="Vista previa" style="display: none;">
+                            <div id="imagenProductoPlaceholder">
+                                <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--primary);"></i>
+                                <p style="margin-top: 8px;">Haz clic para subir una imagen</p>
+                            </div>
+                        </div>
+                        <input type="file" id="imagenProductoInput" class="image-upload-input" accept="image/*" onchange="previsualizarImagenProducto(event)">
+                        <input type="hidden" id="imagenProducto" value="">
+                    </div>
+                    
                     <div class="form-group">
                         <label for="nombreProducto">Nombre del Producto *</label>
                         <input type="text" id="nombreProducto" class="form-control" placeholder="Ej: Dipirona, Leche, etc." required>
                     </div>
                     
-                    <!-- MEJORA 2: Tres precios para cada producto -->
+                    <!-- NUEVO: Campo para gramaje -->
+                    <div class="form-group">
+                        <label for="gramajeProducto">Gramaje / Concentración</label>
+                        <input type="text" id="gramajeProducto" class="form-control" placeholder="Ej: 500mg, 1g, 10ml, etc.">
+                        <small style="color: var(--secondary);">Ejemplo: 500mg, 1g, 10ml, etc.</small>
+                    </div>
+                    
+                    <!-- NUEVO: Campo para indicaciones -->
+                    <div class="form-group">
+                        <label for="indicacionesProducto">Indicaciones / Descripción</label>
+                        <textarea id="indicacionesProducto" class="form-control" rows="3" placeholder="Ej: Para el dolor de cabeza, tomar cada 8 horas..."></textarea>
+                        <small style="color: var(--secondary);">Describe para qué sirve y cómo se usa</small>
+                    </div>
+                    
+                    <!-- Tres precios -->
                     <div class="form-group">
                         <label for="precioCostoProducto">Precio de Costo (lo que te cuesta) *</label>
                         <input type="number" id="precioCostoProducto" class="form-control" placeholder="0" required>
@@ -1586,20 +1742,22 @@
                         <small style="color: var(--secondary);">Tu precio (generalmente precio de ella + tu ganancia)</small>
                     </div>
                     
-                    <!-- MEJORA 1: Agregar categoría "Colirio" -->
+                    <!-- Selector de categoría MEJORADO con Gotas y Losión -->
                     <div class="form-group">
                         <label for="categoriaProducto">Categoría *</label>
                         <select id="categoriaProducto" class="form-control" required>
                             <option value="">Seleccionar categoría</option>
-                            <option value="medicamento">Medicamentos (Blister/Tabletas)</option>
-                            <option value="inyecciones">Inyecciones</option>
-                            <option value="cremas">Cremas/Geles/Ungüentos</option>
-                            <option value="ovulos">Óvulos</option>
-                            <option value="suspension">Suspensiones</option>
-                            <option value="operaciones">Material de Operaciones</option>
-                            <option value="lacteos">Lácteos</option>
-                            <option value="colirio">Colirio (Gotas para los ojos)</option>
-                            <option value="otros">Otros</option>
+                            <option value="medicamento">💊 Medicamentos (Blister/Tabletas)</option>
+                            <option value="inyecciones">💉 Inyecciones</option>
+                            <option value="cremas">🧪 Cremas/Geles/Ungüentos</option>
+                            <option value="ovulos">🔴 Óvulos</option>
+                            <option value="suspension">🍼 Suspensiones</option>
+                            <option value="operaciones">📌 Material de Operaciones</option>
+                            <option value="lacteos">🥛 Lácteos</option>
+                            <option value="colirio">👁 Colirio (Gotas para los ojos)</option>
+                            <option value="gotas">💧 Gotas (Otras)</option>  <!-- NUEVA CATEGORÍA -->
+                            <option value="losion">🧴 Losión</option>        <!-- NUEVA CATEGORÍA -->
+                            <option value="otros">📦 Otros</option>
                         </select>
                     </div>
                     
@@ -1622,6 +1780,24 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- NUEVO: Modal para Detalle de Producto (para clientes) -->
+        <div id="modalDetalleProducto" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Detalle del Producto</h2>
+                    <button class="close-btn" onclick="cerrarModalDetalleProducto()">&times;</button>
+                </div>
+                
+                <div id="detalle-producto-contenido" class="producto-detalle-modal">
+                    <!-- Contenido cargado dinámicamente -->
+                </div>
+                
+                <button class="btn" onclick="agregarProductoDesdeDetalle()" style="background: var(--success); color: white; width: 100%; padding: 16px; margin-top: 16px;">
+                    <i class="fas fa-cart-plus"></i> Agregar al Pedido
+                </button>
             </div>
         </div>
 
@@ -1717,6 +1893,7 @@
         let añoActualCalendario = new Date().getFullYear();
         let intervaloNotificaciones = null;
         let filtroHistorialActual = 'todos';
+        let productoDetalleActual = null; // Para el modal de detalle
 
         // Configuración
         let config = JSON.parse(localStorage.getItem('config')) || {
@@ -1799,7 +1976,7 @@
                 usuarios: usuarios,
                 notificaciones: notificaciones,
                 fechaBackup: new Date().toISOString(),
-                version: '6.0' // Nueva versión con todas las mejoras
+                version: '6.1' // Versión con nuevas categorías y campos
             };
             
             const dataStr = JSON.stringify(data, null, 2);
@@ -1836,7 +2013,7 @@
             cargarListaBackups();
         }
 
-        // ================ MEJORA 1: CATEGORÍA "COLIRIO" ================
+        // ================ MEJORA 1: CATEGORÍAS AMPLIADAS (con Gotas y Losión) ================
         function obtenerNombreCategoria(categoria) {
             const nombres = {
                 'medicamento': '💊 Medicamentos (Blister/Tabletas)',
@@ -1846,7 +2023,9 @@
                 'suspension': '🍼 Suspensiones',
                 'operaciones': '📌 Material de Operaciones',
                 'lacteos': '🥛 Lácteos',
-                'colirio': '👁 Colirio (Gotas para los ojos)', // NUEVA CATEGORÍA
+                'colirio': '👁 Colirio (Gotas para los ojos)',
+                'gotas': '💧 Gotas',        // NUEVA CATEGORÍA
+                'losion': '🧴 Losión',       // NUEVA CATEGORÍA
                 'otros': '📦 Otros Productos'
             };
             return nombres[categoria] || categoria;
@@ -1873,7 +2052,8 @@
             // Convertir a array y ordenar por orden de categorías
             const categoriasOrden = [
                 'medicamento', 'inyecciones', 'cremas', 'ovulos', 
-                'suspension', 'operaciones', 'lacteos', 'colirio', 'otros'
+                'suspension', 'operaciones', 'lacteos', 'colirio', 
+                'gotas', 'losion', 'otros'  // NUEVAS CATEGORÍAS AÑADIDAS
             ];
             
             return categoriasOrden
@@ -1893,7 +2073,9 @@
                 'suspension': '🍼 *SUSPENSIONES*',
                 'operaciones': '📌 *MATERIAL DE OPERACIONES*',
                 'lacteos': '🥛 *LÁCTEOS*',
-                'colirio': '👁 *COLIRIO (GOTAS PARA LOS OJOS)*', // NUEVA CATEGORÍA
+                'colirio': '👁 *COLIRIO (GOTAS PARA LOS OJOS)*',
+                'gotas': '💧 *GOTAS*',           // NUEVA CATEGORÍA
+                'losion': '🧴 *LOSIÓN*',          // NUEVA CATEGORÍA
                 'otros': '📦 *OTROS PRODUCTOS*'
             };
             return nombres[categoria] || categoria.toUpperCase();
@@ -1908,7 +2090,9 @@
                 'suspension': '🍼',
                 'operaciones': '📌',
                 'lacteos': '🥛',
-                'colirio': '👁', // NUEVO EMOJI
+                'colirio': '👁',
+                'gotas': '💧',      // NUEVO EMOJI
+                'losion': '🧴',      // NUEVO EMOJI
                 'otros': '📦'
             };
             return emojis[categoria] || '📦';
@@ -1979,7 +2163,7 @@
             return costoTotal;
         }
 
-        // ================ MEJORA 3: BOTÓN COMPARTIR PARA PROVEEDORA (UNICO Y MULTIPLE) ================
+        // ================ MEJORA 3: BOTÓN COMPARTIR PARA PROVEEDORA ================
         function compartirConProveedora(pedidoEspecifico = null) {
             // Si se pasa un pedido específico, solo comparte ese
             // Si no, usa el pedidoACompartir (para el modal de detalles)
@@ -2000,7 +2184,7 @@
             
             pedido.productos.forEach(p => {
                 const productoOriginal = buscarProductoOriginal(p.id);
-                // MEJORA: Usar el precio correcto según quién consiguió al cliente
+                // Usar el precio correcto según quién consiguió al cliente
                 const precioUsado = pedido.quienConsiguio === 'yo' ? 
                     (productoOriginal ? productoOriginal.precioVentaElla || productoOriginal.precio : p.precio) :
                     (productoOriginal ? productoOriginal.precioVentaElla || productoOriginal.precio : p.precio);
@@ -2045,13 +2229,6 @@
                 alert('No hay pedidos completados hoy para reportar');
                 return;
             }
-            
-            // Preguntar cuántos pedidos quiere incluir
-            let mensajeConfirmacion = `Tienes ${pedidosHoy.length} pedidos completados hoy.\n`;
-            mensajeConfirmacion += `¿Quieres compartir todos los pedidos o seleccionar algunos?`;
-            
-            // Por simplicidad, primero haré que comparta todos
-            // Luego puedes agregar un modal para seleccionar cuáles
             
             let mensaje = `📊 *REPORTE DIARIO PARA PROVEEDORA* 📊\n\n`;
             mensaje += `*Fecha:* ${hoy.toLocaleDateString('es-ES')}\n`;
@@ -2324,7 +2501,7 @@
             // Actualizar contador en configuración
             document.getElementById('totalProductosNuevos').textContent = todosProductosNuevos.length;
             
-            // ========== SECCIÓN ESPECIAL PARA PRODUCTOS NUEVOS (MEJORADA) ==========
+            // ========== SECCIÓN ESPECIAL PARA PRODUCTOS NUEVOS ==========
             
             // Para usuarios logueados
             const containerEspecialUsuario = document.getElementById('nuevos-especial-usuario');
@@ -2355,6 +2532,7 @@
                                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                                             <h4 style="font-size: 1.1rem; font-weight: bold;">
                                                 ${producto.nombre}
+                                                ${producto.gramaje ? `<span style="font-size: 0.9rem; color: var(--secondary);"> (${producto.gramaje})</span>` : ''}
                                                 <span class="producto-nuevo-tag">NUEVO</span>
                                             </h4>
                                             <span style="font-size: 0.8rem; color: #f59e0b; font-weight: bold;">
@@ -2366,6 +2544,7 @@
                                             <div><strong>👩‍💼 Precio proveedora:</strong> $${producto.precioVentaElla || producto.precio}</div>
                                             ${usuarioLogueado ? `<div style="color: #10b981;"><strong>💰 Costo:</strong> $${producto.precioCosto || 0}</div>` : ''}
                                             ${producto.presentacion ? `<div><strong>📦 Presentación:</strong> ${producto.presentacion}</div>` : ''}
+                                            ${producto.indicaciones ? `<div><strong>📝 Indicaciones:</strong> ${producto.indicaciones.substring(0, 50)}${producto.indicaciones.length > 50 ? '...' : ''}</div>` : ''}
                                             <span class="categoria-badge categoria-${producto.categoria}" style="margin-top: 8px;">
                                                 ${obtenerEmojiCategoria(producto.categoria)} ${producto.categoria}
                                             </span>
@@ -2412,10 +2591,11 @@
                         <div class="productos-list">
                             ${productosDisponiblesCliente.map(producto => {
                                 return `
-                                    <div class="nuevos-especial-producto">
+                                    <div class="nuevos-especial-producto" onclick="verDetalleProductoCliente(${producto.id})">
                                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                                             <h4 style="font-size: 1.1rem; font-weight: bold;">
                                                 ${producto.nombre}
+                                                ${producto.gramaje ? `<span style="font-size: 0.9rem; color: var(--secondary);"> (${producto.gramaje})</span>` : ''}
                                                 <span class="producto-nuevo-tag">NUEVO</span>
                                             </h4>
                                             <span style="font-size: 1.2rem; color: var(--primary); font-weight: bold;">
@@ -2424,13 +2604,14 @@
                                         </div>
                                         <div style="font-size: 0.9rem; color: var(--secondary);">
                                             ${producto.presentacion ? `<div><strong>📦:</strong> ${producto.presentacion}</div>` : ''}
+                                            ${producto.indicaciones ? `<div><strong>📝:</strong> ${producto.indicaciones.substring(0, 50)}${producto.indicaciones.length > 50 ? '...' : ''}</div>` : ''}
                                             <span class="categoria-badge categoria-${producto.categoria}" style="margin-top: 8px;">
                                                 ${obtenerEmojiCategoria(producto.categoria)} ${producto.categoria}
                                             </span>
                                         </div>
                                         <div style="margin-top: 12px; text-align: center;">
-                                            <button class="btn" onclick="abrirModalPedido()" style="background: var(--primary); color: white; padding: 8px 16px; font-size: 0.9rem; width: 100%;">
-                                                <i class="fas fa-cart-plus"></i> Pedir este producto
+                                            <button class="btn" onclick="event.stopPropagation(); verDetalleProductoCliente(${producto.id})" style="background: var(--primary); color: white; padding: 8px 16px; font-size: 0.9rem; width: 100%;">
+                                                <i class="fas fa-info-circle"></i> Ver Detalles
                                             </button>
                                         </div>
                                     </div>
@@ -2446,7 +2627,7 @@
                 containerEspecialCliente.style.display = 'none';
             }
             
-            // ========== SECCIÓN NORMAL DE PRODUCTOS NUEVOS (para compatibilidad) ==========
+            // ========== SECCIÓN NORMAL DE PRODUCTOS NUEVOS ==========
             
             // Para usuarios logueados (versión normal)
             const containerUsuario = document.getElementById('nuevos-productos-usuario');
@@ -2464,6 +2645,7 @@
                                     <div class="producto-info">
                                         <h4>
                                             ${producto.nombre}
+                                            ${producto.gramaje ? `<span style="font-size: 0.9rem; color: var(--secondary);"> (${producto.gramaje})</span>` : ''}
                                             <span class="producto-nuevo-tag">NUEVO</span>
                                         </h4>
                                         <div style="font-size: 0.8rem; color: var(--secondary);">
@@ -2530,6 +2712,128 @@
             alert(`"${productoEncontrado.nombre}" agregado al pedido`);
         }
 
+        // ================ MEJORA 5: NUEVO SISTEMA DE BÚSQUEDA CON MODAL DE DETALLE ================
+        
+        // Función para que los clientes vean el detalle de un producto
+        function verDetalleProductoCliente(productoId) {
+            // Buscar el producto
+            let productoEncontrado = null;
+            for (let listado of listados) {
+                if (listado.productos) {
+                    productoEncontrado = listado.productos.find(p => p.id === productoId);
+                    if (productoEncontrado) break;
+                }
+            }
+            
+            if (!productoEncontrado) {
+                alert('Producto no encontrado');
+                return;
+            }
+            
+            productoDetalleActual = productoEncontrado;
+            
+            // Construir HTML del modal
+            const imagenHTML = productoEncontrado.imagen ? 
+                `<img src="${productoEncontrado.imagen}" alt="${productoEncontrado.nombre}" class="producto-imagen">` :
+                `<div class="producto-imagen-placeholder"><i class="fas fa-capsules"></i></div>`;
+            
+            const contenido = `
+                <div class="producto-imagen-container">
+                    ${imagenHTML}
+                </div>
+                
+                <h3 style="font-size: 1.4rem; margin-bottom: 4px; text-align: center;">${productoEncontrado.nombre}</h3>
+                ${productoEncontrado.gramaje ? `<p style="text-align: center; color: var(--secondary); margin-bottom: 16px;">${productoEncontrado.gramaje}</p>` : ''}
+                
+                <div class="producto-info-grid">
+                    <div class="info-item">
+                        <span class="info-label">Categoría</span>
+                        <span class="info-value">${obtenerNombreCategoria(productoEncontrado.categoria)}</span>
+                    </div>
+                    ${productoEncontrado.presentacion ? `
+                    <div class="info-item">
+                        <span class="info-label">Presentación</span>
+                        <span class="info-value">${productoEncontrado.presentacion}</span>
+                    </div>
+                    ` : ''}
+                    <div class="info-item">
+                        <span class="info-label">Precio</span>
+                        <span class="info-value precio">$${productoEncontrado.precio}</span>
+                    </div>
+                    ${productoEncontrado.disponible !== false ? `
+                    <div class="info-item">
+                        <span class="info-label">Disponibilidad</span>
+                        <span class="info-value" style="color: #10b981;">✅ Disponible</span>
+                    </div>
+                    ` : `
+                    <div class="info-item">
+                        <span class="info-label">Disponibilidad</span>
+                        <span class="info-value" style="color: #ef4444;">❌ No disponible</span>
+                    </div>
+                    `}
+                </div>
+                
+                ${productoEncontrado.indicaciones ? `
+                <div class="indicaciones-box">
+                    <h4><i class="fas fa-info-circle"></i> Indicaciones</h4>
+                    <p class="indicaciones-texto">${productoEncontrado.indicaciones}</p>
+                </div>
+                ` : ''}
+                
+                ${productoEncontrado.precioCosto && usuarioLogueado ? `
+                <div style="background: #f0fdf4; padding: 12px; border-radius: 8px; margin-top: 8px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: #10b981;">💰 Costo:</span>
+                        <span style="font-weight: bold;">$${productoEncontrado.precioCosto}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                        <span style="color: #8B5CF6;">👩‍💼 Precio proveedora:</span>
+                        <span style="font-weight: bold;">$${productoEncontrado.precioVentaElla || productoEncontrado.precio}</span>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('detalle-producto-contenido').innerHTML = contenido;
+            document.getElementById('modalDetalleProducto').style.display = 'flex';
+        }
+
+        function cerrarModalDetalleProducto() {
+            document.getElementById('modalDetalleProducto').style.display = 'none';
+            productoDetalleActual = null;
+        }
+
+        function agregarProductoDesdeDetalle() {
+            if (!productoDetalleActual) return;
+            
+            if (productoDetalleActual.disponible === false) {
+                alert('Este producto no está disponible actualmente');
+                return;
+            }
+            
+            agregarProductoAPedido(productoDetalleActual.id);
+            cerrarModalDetalleProducto();
+        }
+
+        // Función para previsualizar imagen antes de subirla
+        function previsualizarImagenProducto(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('imagenProductoPreview');
+                const placeholder = document.getElementById('imagenProductoPlaceholder');
+                const imagenInput = document.getElementById('imagenProducto');
+                
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                placeholder.style.display = 'none';
+                imagenInput.value = e.target.result; // Guardamos la imagen en Base64
+            };
+            reader.readAsDataURL(file);
+        }
+
         // ================ SISTEMA DE COMPARTIR LISTADOS CON PRODUCTOS NUEVOS ESPECIAL ================
         function compartirListadoNuevosEspecial() {
             if (!listadoSeleccionado || !listadoSeleccionado.productos || listadoSeleccionado.productos.length === 0) {
@@ -2586,7 +2890,7 @@
             });
             
             // Ordenar categorías
-            const categoriasOrden = ['medicamento', 'inyecciones', 'cremas', 'ovulos', 'suspension', 'operaciones', 'lacteos', 'colirio', 'otros'];
+            const categoriasOrden = ['medicamento', 'inyecciones', 'cremas', 'ovulos', 'suspension', 'operaciones', 'lacteos', 'colirio', 'gotas', 'losion', 'otros'];
             
             categoriasOrden.forEach(categoria => {
                 if (productosPorCategoria[categoria]) {
@@ -2598,6 +2902,10 @@
                     productosPorCategoria[categoria].forEach(producto => {
                         const emoji = obtenerEmojiCategoria(categoria);
                         contenido += `${emoji} *${producto.nombre}*`;
+                        
+                        if (producto.gramaje) {
+                            contenido += ` (${producto.gramaje})`;
+                        }
                         
                         if (producto.presentacion) {
                             contenido += ` (${producto.presentacion})`;
@@ -2661,7 +2969,7 @@
             });
             
             // Ordenar categorías
-            const categoriasOrden = ['medicamento', 'inyecciones', 'cremas', 'ovulos', 'suspension', 'operaciones', 'lacteos', 'colirio', 'otros'];
+            const categoriasOrden = ['medicamento', 'inyecciones', 'cremas', 'ovulos', 'suspension', 'operaciones', 'lacteos', 'colirio', 'gotas', 'losion', 'otros'];
             
             categoriasOrden.forEach(categoria => {
                 if (productosPorCategoria[categoria]) {
@@ -2673,6 +2981,10 @@
                     productosPorCategoria[categoria].forEach(producto => {
                         const emoji = obtenerEmojiCategoria(categoria);
                         contenido += `${emoji} *${producto.nombre}*`;
+                        
+                        if (producto.gramaje) {
+                            contenido += ` (${producto.gramaje})`;
+                        }
                         
                         if (producto.presentacion) {
                             contenido += ` (${producto.presentacion})`;
@@ -2833,7 +3145,7 @@
                 usuarios: usuarios,
                 notificaciones: notificaciones,
                 fechaBackup: new Date().toISOString(),
-                version: '6.0'
+                version: '6.1'
             };
             
             const dataStr = JSON.stringify(data, null, 2);
@@ -3489,7 +3801,7 @@
                         ${obtenerNombreCategoria(grupo.categoria)} (${grupo.productos.length})
                     </h3>
                     ${grupo.productos.map(producto => {
-                        // MEJORA: Calcular si es nuevo (menos de 1 semana y disponible)
+                        // Calcular si es nuevo (menos de 1 semana y disponible)
                         const unaSemanaAtras = new Date();
                         unaSemanaAtras.setDate(unaSemanaAtras.getDate() - 7);
                         
@@ -3501,6 +3813,7 @@
                                 <div class="producto-info">
                                     <h4>
                                         ${producto.nombre}
+                                        ${producto.gramaje ? `<span style="font-size: 0.9rem; color: var(--secondary);"> (${producto.gramaje})</span>` : ''}
                                         ${esNuevo ? '<span class="producto-nuevo-tag">NUEVO</span>' : ''}
                                     </h4>
                                     <div style="font-size: 0.8rem; color: var(--secondary);">
@@ -3538,6 +3851,12 @@
             document.getElementById('modalProductoTitulo').textContent = 'Nuevo Producto';
             document.getElementById('formProducto').reset();
             document.getElementById('productoDisponible').checked = true;
+            
+            // Limpiar previsualización de imagen
+            document.getElementById('imagenProductoPreview').style.display = 'none';
+            document.getElementById('imagenProductoPlaceholder').style.display = 'block';
+            document.getElementById('imagenProducto').value = '';
+            
             document.getElementById('modalNuevoProducto').style.display = 'flex';
         }
 
@@ -3551,18 +3870,21 @@
             const producto = {
                 id: productoEditando ? productoEditando.id : Date.now(),
                 nombre: document.getElementById('nombreProducto').value,
+                gramaje: document.getElementById('gramajeProducto').value || '',
+                indicaciones: document.getElementById('indicacionesProducto').value || '',
+                imagen: document.getElementById('imagenProducto').value || '',
                 precio: parseInt(document.getElementById('precioProducto').value),
                 precioCosto: parseInt(document.getElementById('precioCostoProducto').value),
                 precioVentaElla: parseInt(document.getElementById('precioVentaEllaProducto').value),
                 categoria: document.getElementById('categoriaProducto').value,
                 presentacion: document.getElementById('presentacionProducto').value || '',
                 disponible: document.getElementById('productoDisponible').checked,
-                // MEJORA: Solo establecer fechaCreacion si es un producto NUEVO
+                // Solo establecer fechaCreacion si es un producto NUEVO
                 fechaCreacion: productoEditando ? productoEditando.fechaCreacion : new Date().toISOString()
             };
             
             if (productoEditando) {
-                // MEJORA: Al editar, NO cambiamos la fechaCreacion
+                // Al editar, NO cambiamos la fechaCreacion
                 // Solo actualizamos los otros campos
                 
                 // Actualizar producto existente en todos los listados
@@ -3610,6 +3932,21 @@
             document.getElementById('modalProductoTitulo').textContent = 'Editar Producto';
             document.getElementById('productoId').value = productoEditando.id;
             document.getElementById('nombreProducto').value = productoEditando.nombre;
+            document.getElementById('gramajeProducto').value = productoEditando.gramaje || '';
+            document.getElementById('indicacionesProducto').value = productoEditando.indicaciones || '';
+            
+            // Cargar imagen si existe
+            if (productoEditando.imagen) {
+                document.getElementById('imagenProductoPreview').src = productoEditando.imagen;
+                document.getElementById('imagenProductoPreview').style.display = 'block';
+                document.getElementById('imagenProductoPlaceholder').style.display = 'none';
+                document.getElementById('imagenProducto').value = productoEditando.imagen;
+            } else {
+                document.getElementById('imagenProductoPreview').style.display = 'none';
+                document.getElementById('imagenProductoPlaceholder').style.display = 'block';
+                document.getElementById('imagenProducto').value = '';
+            }
+            
             document.getElementById('precioProducto').value = productoEditando.precio;
             document.getElementById('precioCostoProducto').value = productoEditando.precioCosto || 0;
             document.getElementById('precioVentaEllaProducto').value = productoEditando.precioVentaElla || productoEditando.precio;
@@ -3733,6 +4070,12 @@
             } else if (linea.includes('👁')) {
                 categoria = "colirio";
                 presentacion = "Frasco";
+            } else if (linea.includes('💧')) {
+                categoria = "gotas";
+                presentacion = "Frasco";
+            } else if (linea.includes('🧴')) {
+                categoria = "losion";
+                presentacion = "Frasco";
             }
             
             // Detección por palabras clave (si no se detectó por emoji)
@@ -3760,6 +4103,12 @@
                     presentacion = /libra/i.test(lineaLower) ? "Libra" : (/litro/i.test(lineaLower) ? "Litro" : "Unidad");
                 } else if (/(colirio|gotas.*ojos|oftálmico|oftalmico)/i.test(lineaLower)) {
                     categoria = "colirio";
+                    presentacion = "Frasco";
+                } else if (/(gotas.*o|solución.*oft|gotas)/i.test(lineaLower)) {
+                    categoria = "gotas";
+                    presentacion = "Frasco";
+                } else if (/(loción|lotion|emulsión|emulsion)/i.test(lineaLower)) {
+                    categoria = "losion";
                     presentacion = "Frasco";
                 } else if (esNombreMedicamento(limpia)) {
                     categoria = "medicamento";
@@ -3816,7 +4165,7 @@
                 'ibuprofeno', 'levotiroxina', 'loratadina', 'meloxicam', 'mebendazol',
                 'metoclopramida', 'metronidazol', 'nifedipino', 'omeprazol', 'paracetamol',
                 'clotrimazol', 'gentamicina', 'diclofenac', 'nistatina', 'terbinafina',
-                'bacalao', 'complejo b', 'rosefin', 'vitamina', 'colirio'
+                'bacalao', 'complejo b', 'rosefin', 'vitamina', 'colirio', 'gotas', 'losion'
             ];
             
             return medicamentosComunes.some(med => 
@@ -3924,9 +4273,12 @@
                         ${obtenerNombreCategoria(grupo.categoria)}
                     </h3>
                     ${grupo.productos.map(producto => `
-                        <div class="producto-card">
+                        <div class="producto-card" onclick="verDetalleProductoCliente(${producto.id})">
                             <div class="producto-info">
-                                <h4>${producto.nombre}</h4>
+                                <h4>
+                                    ${producto.nombre}
+                                    ${producto.gramaje ? `<span style="font-size: 0.8rem; color: var(--secondary);"> (${producto.gramaje})</span>` : ''}
+                                </h4>
                                 <div style="font-size: 0.8rem; color: var(--secondary);">
                                     $${producto.precio}
                                     ${producto.presentacion ? ` • ${producto.presentacion}` : ''}
@@ -4354,6 +4706,7 @@
                                 <input type="checkbox" id="prod-${producto.id}" value="${producto.id}">
                                 <label for="prod-${producto.id}" style="flex: 1;">
                                     <strong>${producto.nombre}</strong> 
+                                    ${producto.gramaje ? `<br><small style="color: var(--secondary);">${producto.gramaje}</small>` : ''}
                                     <br><small>Tu precio: $${producto.precio} | Precio proveedora: $${producto.precioVentaElla || producto.precio}</small>
                                     ${usuarioLogueado && producto.precioCosto ? `<br><small style="color: #10b981;">Costo: $${producto.precioCosto}</small>` : ''}
                                     ${producto.presentacion ? ` (${producto.presentacion})` : ''}
@@ -4418,6 +4771,7 @@
                     <div class="producto-seleccionado">
                         <div>
                             <strong>${producto.cantidad}x ${producto.nombre}</strong>
+                            ${producto.gramaje ? `<br><small>${producto.gramaje}</small>` : ''}
                             <br><small>$${precioUsado} c/u ${quienConsiguio === 'proveedora' ? '(precio proveedora)' : ''}</small>
                             ${usuarioLogueado && productoOriginal ? `<br><small style="color: #10b981;">Ganancia: $${gananciaProducto}</small>` : ''}
                         </div>
